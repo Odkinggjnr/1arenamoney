@@ -209,7 +209,7 @@ const Home = () => {
             </p>
             <button
               onClick={() => enterLobby(room.price)}
-              className="bg-blue-500 hover:bg-blue-600 w-full py-2 rounded-xl font-semibold"
+              className="bg-blue-500 hover:bg-blue-600 py-3 px-10 items-center w-full justify-center text-sm cursor-pointer rounded-full gap-2 font-semibold"
             >
               Join
             </button>
