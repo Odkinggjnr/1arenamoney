@@ -1,0 +1,149 @@
+import React, { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const Register = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirm: "",
+  });
+
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false); // 👈 Added loading state
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const togglePassword = () => setShowPass(!showPass);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true);
+
+    const { username, email, password, confirm } = formData;
+
+    setTimeout(() => {
+      if (!username || !email || !password) {
+        toast.error("⚠️ Please fill in all fields!", { position: "top-center" });
+        setLoading(false);
+        return;
+      }
+
+      if (password !== confirm) {
+        toast.error("❌ Passwords do not match!", { position: "top-center" });
+        setLoading(false);
+        return;
+      }
+
+      const user = { username, email, password };
+      localStorage.setItem("arenaXUser", JSON.stringify(user));
+
+      toast.success("✅ Signup successful! Redirecting to login...", {
+        position: "top-center",
+        autoClose: 2500,
+      });
+
+      setTimeout(() => (window.location.href = "/login"), 2500);
+    }, 1500);
+  };
+
+  return (
+    <div
+      className="flex justify-center items-center min-h-screen bg-black relative overflow-hidden"
+      style={{
+        backgroundImage:
+          "url('https://i.supaimg.com/f27c6130-082e-4bfc-abc0-f58d684717f3.png')",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+        backgroundSize: "80%",
+      }}
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.6),rgba(0,0,0,0.9))]" />
+
+      <div className="relative z-10 bg-[rgba(20,20,30,0.85)] border border-white/10 rounded-3xl p-8 w-[350px] text-center shadow-[0_0_25px_rgba(6,182,212,0.4)] animate-float">
+        <img
+          src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
+          alt="Arena X Logo"
+          className="w-[100px] mx-auto mb-4 rounded-2xl drop-shadow-[0_0_10px_rgba(6,182,212,0.8)] animate-pulseLogo"
+        />
+
+        <h2 className="text-[26px] text-blue-500 mb-6 font-semibold drop-shadow-[0_0_10px_#3b82f6]">
+          Create Account
+        </h2>
+
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+            className="w-full p-3 mb-3 rounded-full bg-white/10 text-white text-sm outline-none placeholder:text-gray-400 focus:bg-white/15 focus:shadow-[0_0_10px_#06b6d4] transition-all"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full p-3 mb-3 rounded-full bg-white/10 text-white text-sm outline-none placeholder:text-gray-400 focus:bg-white/15 focus:shadow-[0_0_10px_#06b6d4] transition-all"
+          />
+          <input
+            type={showPass ? "text" : "password"}
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="w-full p-3 mb-3 rounded-full bg-white/10 text-white text-sm outline-none placeholder:text-gray-400 focus:bg-white/15 focus:shadow-[0_0_10px_#06b6d4] transition-all"
+          />
+          <input
+            type={showPass ? "text" : "password"}
+            name="confirm"
+            placeholder="Confirm Password"
+            value={formData.confirm}
+            onChange={handleChange}
+            required
+            className="w-full p-3 mb-2 rounded-full bg-white/10 text-white text-sm outline-none placeholder:text-gray-400 focus:bg-white/15 focus:shadow-[0_0_10px_#06b6d4] transition-all"
+          />
+
+          <div
+            onClick={togglePassword}
+            className="flex items-center text-gray-300 text-sm mb-2 cursor-pointer select-none"
+          >
+            👁 {showPass ? "Hide Passwords" : "Show Passwords"}
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 mt-3 rounded-full text-white font-semibold transition-all ${
+              loading
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-gradient-to-r from-cyan-500 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.6)] hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(6,182,212,0.9)]"
+            }`}
+          >
+            {loading ? "Creating account..." : "Sign Up"}
+          </button>
+        </form>
+
+        <p className="text-gray-300 text-sm mt-5">
+          Already have an account?{" "}
+          <a href="/login" className="text-blue-500 hover:underline font-medium">
+            Login here
+          </a>
+        </p>
+      </div>
+
+      <ToastContainer />
+    </div>
+  );
+};
+
+export default Register;
