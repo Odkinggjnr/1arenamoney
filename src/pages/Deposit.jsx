@@ -9,10 +9,10 @@ const Deposit = () => {
   const [qrUrl, setQrUrl] = useState("");
 
   const walletMap = {
-    btc: "bc1qm9kxyzexamplebtcaddress",
-    eth: "0x1a2b3c4dexampleethaddress",
-    usdt: "TA1b2c3d4exampleusdtaddress",
-    ltc: "ltc1qxyzexampleltcaddress",
+    btc: "bc1qtqxn50ehhg2cyrhfay9k4tkurnn5xlrk5whfrn",
+    eth: "0xbD186916f21ce37375f049DE6F0cAb0124E7ddB6",
+    usdt: "TFPkvU8eAUBPpskvA9V8xJJihGJ4efRWUQ",
+    ltc: "ltc1qkkcdwqtjae6enuw25nvywfr83zjw62n48f2dp4",
   };
 
   const generateDeposit = () => {
@@ -118,18 +118,33 @@ const Deposit = () => {
 
         {/* ─── QR Section ───────────────────────────── */}
         {qrUrl && (
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+              marginTop: "25px",
+            }}
+          >
             <p>Send your crypto to this address:</p>
             <img
               src={qrUrl}
               alt="QR Code"
-              style={{ width: "140px", borderRadius: "8px" }}
+              style={{
+                width: "150px",
+                height: "150px",
+                borderRadius: "8px",
+                margin: "15px 0",
+              }}
             />
             <p
               style={{
                 wordBreak: "break-all",
-                marginTop: "10px",
                 color: "#fff",
+                fontSize: "14px",
+                maxWidth: "100%",
               }}
             >
               {walletAddress}
