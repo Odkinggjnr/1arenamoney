@@ -4,6 +4,9 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Deposit from "./pages/Deposit";
+import Leadership from "./pages/Leadership";
+import Notification from "./pages/Notification";
+import Support from "./pages/Support";
 
 const App = () => {
   // Check if user exists in localStorage (mock authentication)
@@ -32,7 +35,10 @@ const App = () => {
         path="/home"
         element={user ? <Home /> : <Navigate to="/login" />}
       />
-      <Route path="/deposit" element={<Deposit/>}/>
+      <Route path="/deposit" element={<Deposit />} />
+      <Route path="/leadership" element={<Leadership />} />
+      <Route path="/notifications" element={<Notification />} />
+      <Route path="/support" element={<Support/>}/>
     </Routes>
   );
 };
