@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Deposit from "./pages/Deposit";
 
 const App = () => {
   // Check if user exists in localStorage (mock authentication)
@@ -31,6 +32,7 @@ const App = () => {
         path="/home"
         element={user ? <Home /> : <Navigate to="/login" />}
       />
+      <Route path="/deposit" element={<Deposit/>}/>
     </Routes>
   );
 };
