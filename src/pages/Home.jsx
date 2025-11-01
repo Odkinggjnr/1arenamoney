@@ -192,7 +192,7 @@ const Home = () => {
       </aside>
 
       {/* ─── Main ───────────────────────────── */}
-      <main className="p-4 ml-3 pb-28 grid md:grid-cols-3">
+      <main className="p-4 pb-28 grid md:grid-cols-3">
         {rooms.map((room, index) => (
           <div
             key={index}
