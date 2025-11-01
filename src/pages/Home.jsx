@@ -192,11 +192,11 @@ const Home = () => {
       </aside>
 
       {/* ─── Main ───────────────────────────── */}
-      <main className="p-4 pb-28 grid md:grid-cols-3">
+      <main className="p-4 pb-28 grid md:grid-cols-3 flex-wrap">
         {rooms.map((room, index) => (
           <div
             key={index}
-            className="bg-[#17181c] rounded-2xl p-4 mb-6 shadow-lg hover:-translate-y-1 transition-transform w-96"
+            className="bg-[#17181c] rounded-2xl p-4 mb-6 shadow-lg hover:-translate-y-1 transition-transform w-96 flex-wrap"
           >
             <img
               src={room.img}
