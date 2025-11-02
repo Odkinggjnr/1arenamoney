@@ -7,6 +7,7 @@ import Deposit from "./pages/Deposit";
 import Leadership from "./pages/Leadership";
 import Notification from "./pages/Notification";
 import Support from "./pages/Support";
+import Withdraw from "./pages/Withdraw";
 
 const App = () => {
   // Check if user exists in localStorage (mock authentication)
@@ -38,7 +39,8 @@ const App = () => {
       <Route path="/deposit" element={<Deposit />} />
       <Route path="/leadership" element={<Leadership />} />
       <Route path="/notifications" element={<Notification />} />
-      <Route path="/support" element={<Support/>}/>
+      <Route path="/support" element={<Support />} />
+      <Route path="/withdraw" element={<Withdraw/>}/>
     </Routes>
   );
 };
