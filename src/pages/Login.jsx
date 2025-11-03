@@ -43,7 +43,7 @@ const Login = () => {
         toast.error("❌ Invalid email or password!", { position: "top-center" });
         setLoading(false);
       }
-    }, 1500); // mimic server delay
+    }, 1500); 
   };
 
   return (
