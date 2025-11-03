@@ -8,6 +8,8 @@ import Leadership from "./pages/Leadership";
 import Notification from "./pages/Notification";
 import Support from "./pages/Support";
 import Withdraw from "./pages/Withdraw";
+import Settings from "./pages/Settings";
+import Tournament from "./pages/Tournament";
 
 const App = () => {
   // Check if user exists in localStorage (mock authentication)
@@ -40,7 +42,9 @@ const App = () => {
       <Route path="/leadership" element={<Leadership />} />
       <Route path="/notifications" element={<Notification />} />
       <Route path="/support" element={<Support />} />
-      <Route path="/withdraw" element={<Withdraw/>}/>
+      <Route path="/withdraw" element={<Withdraw />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/tournament-chat" element={<Tournament />} />
     </Routes>
   );
 };

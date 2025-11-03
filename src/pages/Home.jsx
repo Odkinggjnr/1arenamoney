@@ -162,6 +162,18 @@ const Home = () => {
             >
               🏆 Leadership
             </div>
+             <div
+              onClick={() => goToPage("/settings")}
+              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
+            >
+               Settings
+            </div>
+             <div
+              onClick={() => goToPage("/tournament-chat")}
+              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
+            >
+             Tournament Chat
+            </div>
           </div>
         </div>
 
@@ -233,7 +245,7 @@ const Home = () => {
             <img
               src={item.icon}
               alt={item.name}
-              className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1"
+              className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 "
             />
             {item.name}
           </div>
