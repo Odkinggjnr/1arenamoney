@@ -15,7 +15,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (loading) return; // prevent double submit
+    if (loading) return;
     setLoading(true);
 
     const storedUser = JSON.parse(localStorage.getItem("arenaXUser"));
@@ -43,7 +43,7 @@ const Login = () => {
         toast.error("❌ Invalid email or password!", { position: "top-center" });
         setLoading(false);
       }
-    }, 1500); 
+    }, 1500);
   };
 
   return (
@@ -100,11 +100,10 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 mt-3 rounded-full text-white font-semibold transition-all ${
-              loading
+            className={`w-full py-3 mt-3 rounded-full text-white font-semibold transition-all ${loading
                 ? "bg-gray-600 cursor-not-allowed"
                 : "bg-gradient-to-r from-cyan-500 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.6)] hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(6,182,212,0.9)]"
-            }`}
+              }`}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
