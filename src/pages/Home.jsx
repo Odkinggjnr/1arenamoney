@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import { motion } from "framer-motion";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState({
     username: "Homelander",
@@ -8,11 +13,13 @@ const Home = () => {
     balance: 100,
   });
 
+  // Load user from localStorage
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem("moneyRoomsUser"));
     if (savedUser) setUser(savedUser);
   }, []);
 
+  // Save user to localStorage
   useEffect(() => {
     localStorage.setItem("moneyRoomsUser", JSON.stringify(user));
   }, [user]);
@@ -21,49 +28,34 @@ const Home = () => {
     const newName = prompt("Enter new username:", user.username);
     if (newName && newName.trim() !== "") {
       setUser({ ...user, username: newName.trim() });
+      toast.success("Username updated successfully!");
     }
-  };
-
-  const goToPage = (page) => {
-    window.location.href = page;
-  };
-
-  const enterLobby = (roomId) => {
-    window.location.href = `/lobby?room=${roomId}`;
   };
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const rooms = [
-    {
-      price: 1,
-      win: 80,
-      img: "https://i.supaimg.com/f19f4f97-1562-4714-8be3-1b1e4b1a3478.jpg",
-    },
-    {
-      price: 5,
-      win: 400,
-      img: "https://i.supaimg.com/335a2cb1-a511-40f1-90b4-418dd08f32dd.jpg",
-    },
-    {
-      price: 10,
-      win: 800,
-      img: "https://i.supaimg.com/c2276bf6-1b7f-47c4-8dc1-576921839bf8.jpg",
-    },
-    {
-      price: 15,
-      win: 1200,
-      img: "https://i.supaimg.com/2cc005e6-4985-4d8d-8015-55a33c0b6a8a.jpg",
-    },
-    {
-      price: 20,
-      win: 1600,
-      img: "https://i.supaimg.com/34cac5bd-11c1-4ac5-a358-41c3390874f3.jpg",
-    },
+    { id: 1, price: 1, win: 80, img: "https://i.supaimg.com/f19f4f97-1562-4714-8be3-1b1e4b1a3478.jpg" },
+    { id: 2, price: 5, win: 400, img: "https://i.supaimg.com/335a2cb1-a511-40f1-90b4-418dd08f32dd.jpg" },
+    { id: 3, price: 10, win: 800, img: "https://i.supaimg.com/c2276bf6-1b7f-47c4-8dc1-576921839bf8.jpg" },
+    { id: 4, price: 15, win: 1200, img: "https://i.supaimg.com/2cc005e6-4985-4d8d-8015-55a33c0b6a8a.jpg" },
+    { id: 5, price: 20, win: 1600, img: "https://i.supaimg.com/34cac5bd-11c1-4ac5-a358-41c3390874f3.jpg" },
   ];
 
+  const enterRoom = (roomId) => {
+    toast.info(`Entering Room ${roomId}...`);
+    navigate(`/room/${roomId}`);
+  };
+
   return (
-    <div className="bg-[#0f1115] text-white min-h-screen font-[Inter] relative">
+    <motion.div
+      className="bg-[#0f1115] text-white min-h-screen font-[Inter] relative flex flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <ToastContainer position="top-right" autoClose={2500} />
+
       {/* Overlay */}
       {sidebarOpen && (
         <div
@@ -74,10 +66,7 @@ const Home = () => {
 
       {/* Header */}
       <header className="flex justify-between items-center px-4 py-3 bg-[#0f1115] sticky top-0 z-40 border-b border-white/10">
-        <div
-          onClick={toggleSidebar}
-          className="text-2xl font-bold cursor-pointer"
-        >
+        <div onClick={toggleSidebar} className="text-2xl font-bold cursor-pointer">
           ☰
         </div>
 
@@ -94,13 +83,13 @@ const Home = () => {
             ${user.balance.toFixed(2)}
           </div>
           <button
-            onClick={() => goToPage("/deposit")}
+            onClick={() => toast.info("Deposit feature coming soon!")}
             className="bg-green-600 hover:bg-green-700 text-white font-semibold px-3 py-2 rounded-full text-xs sm:text-sm"
           >
             Deposit
           </button>
           <div
-            onClick={() => goToPage("/notifications")}
+            onClick={() => toast.info("No new notifications")}
             className="relative w-8 h-8 sm:w-9 sm:h-9 bg-[#2a2a2f] rounded-lg flex items-center justify-center text-lg cursor-pointer hover:scale-110 transition-transform"
           >
             🔔
@@ -111,17 +100,14 @@ const Home = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-4/5 max-w-xs bg-[#1a1a1f] text-white z-40 flex flex-col justify-between transition-all duration-300 ${
+        className={`fixed top-0 left-0 h-screen w-4/5 max-w-xs bg-[#1a1a1f] text-white z-40 flex flex-col justify-between transition-all duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div>
+        <div className="grow overflow-y-auto">
           <div className="flex justify-between items-center p-4 border-b border-white/10">
             <h3 className="text-lg font-semibold">Menu</h3>
-            <button
-              onClick={toggleSidebar}
-              className="text-3xl text-white leading-none"
-            >
+            <button onClick={toggleSidebar} className="text-3xl text-white leading-none">
               &times;
             </button>
           </div>
@@ -133,10 +119,7 @@ const Home = () => {
               className="w-12 h-12 rounded-full bg-[#333]"
             />
             <div>
-              <strong
-                onClick={handleUsernameEdit}
-                className="cursor-pointer hover:text-blue-400"
-              >
+              <strong onClick={handleUsernameEdit} className="cursor-pointer hover:text-blue-400">
                 {user.username}
               </strong>
               <p className="text-xs text-gray-400">ID {user.id}</p>
@@ -144,36 +127,15 @@ const Home = () => {
           </div>
 
           <div className="divide-y divide-white/10">
-            <div
-              onClick={() => goToPage("/deposit")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-              💰 Deposit
-            </div>
-            <div
-              onClick={() => goToPage("/withdraw")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-              💸 Withdraw
-            </div>
-            <div
-              onClick={() => goToPage("/leadership")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-              🏆 Leadership
-            </div>
-             <div
-              onClick={() => goToPage("/settings")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-               Settings
-            </div>
-             <div
-              onClick={() => goToPage("/tournament-chat")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-             Tournament Chat
-            </div>
+            {["Deposit", "Withdraw", "Leadership", "Settings", "Tournament Chat"].map((name, i) => (
+              <div
+                key={i}
+                onClick={() => toast.info(`${name} page coming soon!`)}
+                className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
+              >
+                <span>⭐</span> {name}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -188,70 +150,49 @@ const Home = () => {
               </div>
             ))}
           </div>
-
-          <div
-            onClick={() => goToPage("/support")}
-            className="flex justify-between items-center bg-[#2d2d33] hover:bg-blue-500 px-3 py-2 rounded-lg cursor-pointer"
-          >
-            <div>💬 Support</div>
-            <span className="bg-blue-500 text-white px-2 py-0.5 rounded text-xs">
-              24/7
-            </span>
-          </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="p-4 pb-28 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center">
+      <main className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center grow transition-all">
         {rooms.map((room, index) => (
-          <div
+          <motion.div
             key={index}
+            whileHover={{ scale: 1.03 }}
             className="bg-[#17181c] rounded-2xl p-4 shadow-lg hover:-translate-y-1 transition-transform w-full max-w-sm"
           >
-            <img
-              src={room.img}
-              alt={`$${room.price} Room`}
-              className="w-full rounded-xl mb-3"
-            />
-            <h2 className="text-lg sm:text-xl font-bold">
-              ${room.price} Room
-            </h2>
-            <p className="text-gray-400 text-sm mb-3">
-              Win up to ${room.win.toLocaleString()}
-            </p>
+            <img src={room.img} alt={`$${room.price} Room`} className="w-full rounded-xl mb-3" />
+            <h2 className="text-lg sm:text-xl font-bold">${room.price} Room</h2>
+            <p className="text-gray-400 text-sm mb-3">Win up to ${room.win.toLocaleString()}</p>
             <button
-              onClick={() => enterLobby(room.price)}
+              onClick={() => enterRoom(room.id)}
               className="bg-blue-500 hover:bg-blue-600 py-3 w-full text-sm sm:text-base rounded-full font-semibold"
             >
               Join
             </button>
-          </div>
+          </motion.div>
         ))}
       </main>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-2 left-1/2 -translate-x-1/2 w-[95%] max-w-md bg-white/5 flex justify-between px-2 py-2 rounded-2xl backdrop-blur-md text-xs sm:text-sm text-gray-400">
         {[
-          { name: "Home", icon: "https://cdn-icons-png.flaticon.com/512/25/25694.png", path: "/home" },
-          { name: "Leaderboard", icon: "https://cdn-icons-png.flaticon.com/512/5269/5269896.png", path: "/leadership" },
-          { name: "Deposit", icon: "https://cdn-icons-png.flaticon.com/512/906/906175.png", path: "/deposit" },
-          { name: "Withdraw", icon: "https://cdn-icons-png.flaticon.com/512/1828/1828859.png", path: "/withdraw" },
+          { name: "Home", icon: "https://cdn-icons-png.flaticon.com/512/25/25694.png", action: () => navigate("/") },
+          { name: "Leaderboard", icon: "https://cdn-icons-png.flaticon.com/512/5269/5269896.png" },
+          { name: "Deposit", icon: "https://cdn-icons-png.flaticon.com/512/906/906175.png" },
+          { name: "Withdraw", icon: "https://cdn-icons-png.flaticon.com/512/1828/1828859.png" },
         ].map((item, index) => (
           <div
             key={index}
             className="flex-1 text-center cursor-pointer hover:text-blue-400"
-            onClick={() => goToPage(item.path)}
+            onClick={() => item.action ? item.action() : toast.info(`${item.name} page coming soon!`)}
           >
-            <img
-              src={item.icon}
-              alt={item.name}
-              className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 "
-            />
+            <img src={item.icon} alt={item.name} className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1" />
             {item.name}
           </div>
         ))}
       </nav>
-    </div>
+    </motion.div>
   );
 };
 
