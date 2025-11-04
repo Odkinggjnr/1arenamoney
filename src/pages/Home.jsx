@@ -100,12 +100,12 @@ const Home = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen w-4/5 max-w-xs bg-[#1a1a1f] text-white z-40 flex flex-col justify-between transition-all duration-300 ${
+        className={`fixed top-0 left-0 h-screen w-4/5 max-w-xs bg-[#1a1a1f] text-white z-40 flex flex-col transition-all duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="grow overflow-y-auto">
-          <div className="flex justify-between items-center p-4 border-b border-white/10">
+          <div className="flex items-center p-4 border-b border-white/10">
             <h3 className="text-lg font-semibold">Menu</h3>
             <button onClick={toggleSidebar} className="text-3xl text-white leading-none">
               &times;

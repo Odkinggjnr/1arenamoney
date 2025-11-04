@@ -12,6 +12,10 @@ import Settings from "./pages/Settings";
 import Tournament from "./pages/Tournament";
 import Game from "./pages/Game";
 import Game2 from "./pages/Game2";
+import RoomPage from "./pages/RoomPage";
+import Game3 from "./pages/Game3";
+import Game4 from "./pages/Game4";
+import Game5 from "./pages/Game5";
 
 const App = () => {
   // Check if user exists in localStorage (mock authentication)
@@ -47,8 +51,7 @@ const App = () => {
       <Route path="/withdraw" element={<Withdraw />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/tournament-chat" element={<Tournament />} />
-      <Route path="/room/:id" element={<Game />} />
-       <Route path="/room/:id" element={<Game2 />} />
+      <Route path="/room/:id" element={<RoomPage />} />
     </Routes>
   );
 };

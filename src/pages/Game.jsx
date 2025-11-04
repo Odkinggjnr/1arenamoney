@@ -280,7 +280,7 @@ export default function Game() {
               alt="winner"
               className="w-64 max-w-full drop-shadow-2xl mx-auto"
             />
-            <div className="mt-4 text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[#00b0ff] via-[#1e90ff] to-[#16a34a]">
+            <div className="mt-4 text-3xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-[#00b0ff] via-[#1e90ff] to-[#16a34a]">
               You just won $80!
             </div>
             <div className="mt-6 flex gap-3 justify-center">

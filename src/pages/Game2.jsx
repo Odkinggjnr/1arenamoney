@@ -114,7 +114,7 @@ const Game2 = () => {
   return (
     <div className="relative w-full min-h-screen bg-[#031025] text-white overflow-hidden flex flex-col items-center justify-center">
       <canvas ref={canvasRef} className="absolute inset-0 -z-10 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/10 to-blue-500/5 mix-blend-screen -z-10"></div>
+      <div className="absolute inset-0 bg-linear-to-tr from-blue-900/10 to-blue-500/5 mix-blend-screen -z-10"></div>
 
       {status === "playing" && (
         <motion.div
@@ -129,7 +129,7 @@ const Game2 = () => {
 
           <div className="w-full bg-white/10 rounded-full h-3 mb-4 overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-1000"
+              className="h-full bg-linear-to-r from-blue-400 to-cyan-400 transition-all duration-1000"
               style={{ width: `${(timeLeft / 10) * 100}%` }}
             />
           </div>
@@ -178,7 +178,7 @@ const Game2 = () => {
             alt="Winner"
             className="mx-auto w-60 drop-shadow-xl mb-6"
           />
-          <h2 className="text-4xl font-extrabold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-4">
+          <h2 className="text-4xl font-extrabold bg-linear-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-4">
             You Won $400!
           </h2>
           <button
