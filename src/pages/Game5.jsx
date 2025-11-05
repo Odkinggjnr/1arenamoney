@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const Game5 = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get room ID from URL if needed
+  const { id } = useParams();
   const roomId = parseInt(id, 10) || 1;
 
   const [qIndex, setQIndex] = useState(0);
@@ -68,7 +68,7 @@ const Game5 = () => {
     draw();
   }, []);
 
-  // Timer
+  // Timer logic
   useEffect(() => {
     if (finished || eliminated) return;
     setTimeLeft(10);
@@ -83,7 +83,6 @@ const Game5 = () => {
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timerRef.current);
   }, [qIndex, finished, eliminated]);
 
@@ -96,7 +95,6 @@ const Game5 = () => {
       setFeedback("✅ Correct!");
       setFeedbackType("ok");
       setPlayersRemaining((p) => Math.max(2, p - Math.floor(Math.random() * 10)));
-
       setTimeout(() => {
         if (qIndex + 1 === questions.length) {
           setShowConfetti(true);
@@ -134,32 +132,42 @@ const Game5 = () => {
   const current = questions[qIndex];
 
   return (
-    <div className="relative min-h-screen bg-[#031025] text-white flex flex-col justify-center items-center overflow-hidden">
+    <div className="relative min-h-screen bg-[#031025] text-white flex flex-col justify-center items-center overflow-hidden px-3 sm:px-6">
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
-      {showConfetti && <Confetti />}
+      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
 
       <motion.div
-        className="relative z-10 w-[90%] max-w-[720px] bg-white/5 border border-white/10 p-6 rounded-2xl text-center shadow-2xl"
+        className="relative z-10 w-full max-w-[720px] bg-white/5 border border-white/10 p-4 sm:p-6 rounded-2xl text-center shadow-2xl"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
       >
         <div className="flex flex-col items-center mb-4">
-          <img src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png" alt="Logo" className="h-16 rounded-lg drop-shadow-lg" />
-          <div className="mt-2 font-extrabold text-[#00b0ff] text-center">
+          <img
+            src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
+            alt="Logo"
+            className="h-14 sm:h-16 rounded-lg drop-shadow-lg"
+          />
+          <div className="mt-2 font-extrabold text-[#00b0ff] text-center text-sm sm:text-base md:text-lg">
             ⚔️ Room {roomId} — Battle Arena
-            <span className="ml-3 text-white font-normal">Players remaining: {playersRemaining}</span>
+            <span className="ml-2 text-white font-normal block sm:inline">
+              Players remaining: {playersRemaining}
+            </span>
           </div>
         </div>
 
+        {/* Question Section */}
         {!eliminated && !finished && (
           <>
-            <div className="text-[#00b0ff] font-bold mb-2">
+            <div className="text-[#00b0ff] font-bold mb-2 text-sm sm:text-base">
               Players remaining: {playersRemaining}
             </div>
-            <div className="text-3xl font-extrabold mb-6">{current.q}</div>
+            <div className="text-2xl sm:text-3xl font-extrabold mb-6 leading-snug">
+              {current.q}
+            </div>
 
+            {/* Timer Bar */}
             <div className="mb-4">
-              <div className="text-gray-400 font-bold mb-1">
+              <div className="text-gray-400 font-bold mb-1 text-sm sm:text-base">
                 Time remaining: {timeLeft}s
               </div>
               <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
@@ -170,14 +178,15 @@ const Game5 = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mt-4">
+            {/* Options */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
               {current.opts.map((opt, i) => (
                 <button
                   key={i}
                   onClick={() => handleAnswer(i)}
-                  className="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-xl border border-white/10 text-lg font-bold hover:scale-105 transition-transform"
+                  className="flex items-center gap-3 px-3 sm:px-4 py-3 bg-white/5 rounded-xl border border-white/10 text-base sm:text-lg font-bold hover:scale-105 transition-transform"
                 >
-                  <div className="w-10 h-10 flex items-center justify-center bg-[#00b0ff]/10 rounded-md font-bold text-[#00b0ff]">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-[#00b0ff]/10 rounded-md font-bold text-[#00b0ff] text-sm sm:text-base">
                     {String.fromCharCode(65 + i)}
                   </div>
                   {opt}
@@ -185,42 +194,50 @@ const Game5 = () => {
               ))}
             </div>
 
-            <div
-              className={`mt-4 font-bold ${
-                feedbackType === "ok" ? "text-green-400" : "text-red-400"
-              }`}
-            >
+            <div className={`mt-4 font-bold ${feedbackType === "ok" ? "text-green-400" : "text-red-400"} text-sm sm:text-base`}>
               {feedback}
             </div>
           </>
         )}
 
+        {/* Eliminated Screen */}
         {eliminated && !finished && (
           <motion.div className="mt-6 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <h2 className="text-3xl font-bold text-red-500 mb-2">You were eliminated!</h2>
-            <p className="text-gray-400 mb-4">Better luck next time!</p>
-            <div className="flex justify-center gap-4">
-              <button onClick={handleTryAgain} className="px-4 py-2 bg-green-500 rounded-lg font-bold">
+            <h2 className="text-2xl sm:text-3xl font-bold text-red-500 mb-2">You were eliminated!</h2>
+            <p className="text-gray-400 mb-4 text-sm sm:text-base">Better luck next time!</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+              <button onClick={handleTryAgain} className="px-4 py-2 bg-green-500 rounded-lg font-bold w-full sm:w-auto">
                 Try Again
               </button>
-              <button onClick={handleRestart} className="px-4 py-2 bg-linear-to-r from-[#1e90ff] to-[#00b0ff] rounded-lg font-bold">
+              <button
+                onClick={handleRestart}
+                className="px-4 py-2 bg-linear-to-r from-[#1e90ff] to-[#00b0ff] rounded-lg font-bold w-full sm:w-auto"
+              >
                 Home
               </button>
             </div>
           </motion.div>
         )}
 
+        {/* Finished Screen */}
         {finished && (
           <motion.div className="mt-6 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <img src="https://i.supaimg.com/64ac9587-df05-43f8-b0e4-e662e2215e9b.png" alt="Winner Celebration" className="mx-auto w-56 mb-4" />
-            <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-[#00b0ff] to-[#16a34a]">
+            <img
+              src="https://i.supaimg.com/64ac9587-df05-43f8-b0e4-e662e2215e9b.png"
+              alt="Winner Celebration"
+              className="mx-auto w-44 sm:w-56 mb-4"
+            />
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-[#00b0ff] to-[#16a34a]">
               You just won $1,600!
             </h2>
-            <div className="flex justify-center gap-4 mt-4">
-              <button onClick={handleTryAgain} className="px-4 py-2 bg-green-500 rounded-lg font-bold">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-4">
+              <button onClick={handleTryAgain} className="px-4 py-2 bg-green-500 rounded-lg font-bold w-full sm:w-auto">
                 Play Again
               </button>
-              <button onClick={handleRestart} className="px-4 py-2 bg-linear-to-r from-[#1e90ff] to-[#00b0ff] rounded-lg font-bold">
+              <button
+                onClick={handleRestart}
+                className="px-4 py-2 bg-linear-to-r from-[#1e90ff] to-[#00b0ff] rounded-lg font-bold w-full sm:w-auto"
+              >
                 Home
               </button>
             </div>

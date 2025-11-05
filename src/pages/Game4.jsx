@@ -18,7 +18,7 @@ const questions = [
 
 const Game4 = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get room ID from URL
+  const { id } = useParams();
   const roomId = parseInt(id, 10) || 1;
 
   const [qIndex, setQIndex] = useState(0);
@@ -33,7 +33,7 @@ const Game4 = () => {
   const timerRef = useRef(null);
   const canvasRef = useRef(null);
 
-  // Particle background
+  // 🎨 Particle background
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -80,13 +80,13 @@ const Game4 = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Timer
+  // 🕒 Timer
   useEffect(() => {
     if (finished || eliminated) return;
     setTimeLeft(10);
     clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
           handleTimeout();
@@ -95,7 +95,6 @@ const Game4 = () => {
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timerRef.current);
   }, [qIndex, finished, eliminated]);
 
@@ -108,7 +107,7 @@ const Game4 = () => {
     if (i === correct) {
       setFeedback("✅ Correct!");
       setFeedbackType("ok");
-      setPlayers(prev => Math.max(1, prev - Math.floor(Math.random() * 10 + 1)));
+      setPlayers((prev) => Math.max(1, prev - Math.floor(Math.random() * 10 + 1)));
       setTimeout(() => {
         if (qIndex + 1 === questions.length) {
           setShowConfetti(true);
@@ -145,7 +144,6 @@ const Game4 = () => {
   };
 
   const handleRestart = () => navigate("/home");
-
   const current = questions[qIndex];
 
   return (
@@ -154,22 +152,27 @@ const Game4 = () => {
       {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
 
       <motion.div
-        className="relative z-10 w-[90%] max-w-[720px] bg-white/5 border border-white/10 p-6 rounded-2xl text-center shadow-2xl"
+        className="relative z-10 w-[92%] sm:w-[85%] md:w-[700px] lg:w-[750px] bg-white/5 border border-white/10 p-4 sm:p-6 md:p-8 rounded-2xl text-center shadow-2xl"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
       >
         <div className="flex flex-col items-center mb-4">
-          <img src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png" alt="Logo" className="h-16 rounded-lg drop-shadow-lg" />
-          <div className="mt-2 font-extrabold text-[#00b0ff] text-center">
+          <img
+            src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
+            alt="Logo"
+            className="h-12 sm:h-14 md:h-16 rounded-lg drop-shadow-lg"
+          />
+          <div className="mt-2 text-sm sm:text-base font-extrabold text-[#00b0ff] text-center">
             ⚔️ Room {roomId} — Battle Arena
-            <span className="ml-3 text-white font-normal">Players remaining: {players}</span>
+            <span className="ml-2 sm:ml-3 text-white font-normal block sm:inline">
+              Players remaining: {players}
+            </span>
           </div>
         </div>
 
+        {/* Main Game Section */}
         {!eliminated && !finished && (
           <>
-            <div className="text-[#00b0ff] font-bold mb-2">Players remaining: {players}</div>
-
             <AnimatePresence mode="wait">
               <motion.div
                 key={qIndex}
@@ -178,10 +181,14 @@ const Game4 = () => {
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.4 }}
               >
-                <div className="text-3xl font-extrabold mb-6">{current.q}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-6 leading-snug">
+                  {current.q}
+                </div>
 
                 <div className="mb-4">
-                  <div className="text-gray-400 font-bold mb-1">Time remaining: {timeLeft}s</div>
+                  <div className="text-gray-400 font-bold mb-1 text-sm sm:text-base">
+                    Time remaining: {timeLeft}s
+                  </div>
                   <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-linear-to-r from-[#00b0ff] to-[#1e90ff] transition-all duration-200"
@@ -190,12 +197,12 @@ const Game4 = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                   {current.opts.map((opt, i) => (
                     <button
                       key={i}
                       onClick={() => handleAnswer(i)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl border border-white/10 text-lg font-bold hover:scale-105 transition-transform ${
+                      className={`flex items-center gap-3 px-3 py-3 sm:px-4 sm:py-4 rounded-xl border border-white/10 text-sm sm:text-base md:text-lg font-bold hover:scale-105 transition-transform ${
                         selected === null
                           ? "bg-white/5"
                           : i === current.a
@@ -205,7 +212,7 @@ const Game4 = () => {
                           : "bg-white/5 opacity-60"
                       }`}
                     >
-                      <div className="w-10 h-10 flex items-center justify-center bg-[#00b0ff]/10 rounded-md font-bold text-[#00b0ff]">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-[#00b0ff]/10 rounded-md font-bold text-[#00b0ff]">
                         {String.fromCharCode(65 + i)}
                       </div>
                       {opt}
@@ -213,7 +220,11 @@ const Game4 = () => {
                   ))}
                 </div>
 
-                <div className={`mt-4 font-bold ${feedbackType === "ok" ? "text-green-400" : "text-red-400"}`}>
+                <div
+                  className={`mt-4 font-bold text-sm sm:text-lg ${
+                    feedbackType === "ok" ? "text-green-400" : "text-red-400"
+                  }`}
+                >
                   {feedback}
                 </div>
               </motion.div>
@@ -221,6 +232,7 @@ const Game4 = () => {
           </>
         )}
 
+        {/* Result Section */}
         {(eliminated || finished) && (
           <motion.div className="mt-6 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {finished ? (
@@ -228,21 +240,27 @@ const Game4 = () => {
                 <img
                   src="https://i.supaimg.com/34cac011-0641-4f3c-af1b-58912ee3f561.png"
                   alt="Winner"
-                  className="w-48 max-w-full drop-shadow-2xl mx-auto"
+                  className="w-36 sm:w-44 md:w-48 max-w-full drop-shadow-2xl mx-auto"
                 />
-                <div className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-[#00b0ff] via-[#1e90ff] to-[#16a34a]">
+                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-[#00b0ff] via-[#1e90ff] to-[#16a34a]">
                   You just won $1,200!
                 </div>
               </>
             ) : (
-              <div className="text-red-400 font-bold text-lg">❌ Game Over</div>
+              <div className="text-red-400 font-bold text-lg sm:text-xl">❌ Game Over</div>
             )}
 
-            <div className="flex justify-center gap-4 mt-4">
-              <button onClick={handleTryAgain} className="px-4 py-2 bg-green-500 rounded-lg font-bold">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-4">
+              <button
+                onClick={handleTryAgain}
+                className="px-4 py-2 bg-green-500 hover:bg-green-400 rounded-lg font-bold"
+              >
                 {finished ? "Play Again" : "Try Again"}
               </button>
-              <button onClick={handleRestart} className="px-4 py-2 bg-linear-to-r from-[#1e90ff] to-[#00b0ff] rounded-lg font-bold">
+              <button
+                onClick={handleRestart}
+                className="px-4 py-2 bg-linear-to-r from-[#1e90ff] to-[#00b0ff] hover:opacity-90 rounded-lg font-bold"
+              >
                 Home
               </button>
             </div>
