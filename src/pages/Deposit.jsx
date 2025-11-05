@@ -1,44 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Deposit = () => {
- const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState({
     username: "Homelander",
     id: Math.floor(100000000 + Math.random() * 900000000),
     balance: 100,
   });
 
-  useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem("moneyRoomsUser"));
-    if (savedUser) setUser(savedUser);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("moneyRoomsUser", JSON.stringify(user));
-  }, [user]);
-
-  const handleUsernameEdit = () => {
-    const newName = prompt("Enter new username:", user.username);
-    if (newName && newName.trim() !== "") {
-      setUser({ ...user, username: newName.trim() });
-    }
-  };
-
-  const goToPage = (page) => {
-    window.location.href = page;
-  };
-
-  const enterLobby = (roomId) => {
-    window.location.href = `/lobby?room=${roomId}`;
-  };
-
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-
-  const navigate = useNavigate();
-  const [method, setMethod] = useState("crypto"); 
+  const [method, setMethod] = useState("crypto");
   const [crypto, setCrypto] = useState("btc");
   const [amount, setAmount] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
@@ -52,24 +26,51 @@ const Deposit = () => {
     ltc: "ltc1qkkcdwqtjae6enuw25nvywfr83zjw62n48f2dp4",
   };
 
+  // Load user from localStorage
+  useEffect(() => {
+    const savedUser = JSON.parse(localStorage.getItem("moneyRoomsUser"));
+    if (savedUser) setUser(savedUser);
+  }, []);
+
+  // Save user to localStorage
+  useEffect(() => {
+    localStorage.setItem("moneyRoomsUser", JSON.stringify(user));
+  }, [user]);
+
+  const handleUsernameEdit = () => {
+    const newName = prompt("Enter new username:", user.username);
+    if (newName && newName.trim() !== "") {
+      setUser({ ...user, username: newName.trim() });
+      toast.success("Username updated successfully!");
+    }
+  };
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const goToPage = (page) => {
+    navigate(page);
+  };
+
   const generateCryptoDeposit = () => {
-    if (!amount) {
-      toast.error("Please enter an amount before generating an address.");
+    if (!amount || Number(amount) <= 0) {
+      toast.error("Please enter a valid amount before generating an address.");
       return;
     }
     const address = walletMap[crypto];
     setWalletAddress(address);
-    setQrUrl(`https://api.qrserver.com/v1/create-qr-code/?data=${address}&size=150x150`);
+    setQrUrl(
+      `https://api.qrserver.com/v1/create-qr-code/?data=${address}&size=150x150`
+    );
     toast.success("Crypto deposit address generated successfully!");
   };
 
   const handleFiatDeposit = () => {
-    if (!amount) {
-      toast.error("Please enter an amount.");
+    if (!amount || Number(amount) <= 0) {
+      toast.error("Please enter a valid amount.");
       return;
     }
     toast.info(`Redirecting to payment gateway for ${currency} ${amount}...`);
-    // Here you can redirect to your payment processor API (e.g. Paystack, Stripe)
+    // Integrate payment gateway here
   };
 
   return (
@@ -82,7 +83,9 @@ const Deposit = () => {
         padding: "16px",
       }}
     >
- {/* Overlay */}
+      <ToastContainer position="top-right" autoClose={2500} />
+
+      {/* Overlay */}
       {sidebarOpen && (
         <div
           onClick={toggleSidebar}
@@ -92,18 +95,16 @@ const Deposit = () => {
 
       {/* Header */}
       <header className="flex justify-between items-center px-4 py-3 bg-[#0f1115] sticky top-0 z-40 border-b border-white/10">
-        <div
-          onClick={toggleSidebar}
-          className="text-2xl font-bold cursor-pointer"
-        >
+        <div onClick={toggleSidebar} className="text-2xl font-bold cursor-pointer">
           ☰
         </div>
 
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <img
+            onClick={() => navigate("/")}
             src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
             alt="Logo"
-            className="h-8 sm:h-10"
+            className="h-8 sm:h-10 cursor-pointer"
           />
         </div>
 
@@ -136,10 +137,7 @@ const Deposit = () => {
         <div>
           <div className="flex justify-between items-center p-4 border-b border-white/10">
             <h3 className="text-lg font-semibold">Menu</h3>
-            <button
-              onClick={toggleSidebar}
-              className="text-3xl text-white leading-none"
-            >
+            <button onClick={toggleSidebar} className="text-3xl text-white leading-none">
               &times;
             </button>
           </div>
@@ -162,36 +160,21 @@ const Deposit = () => {
           </div>
 
           <div className="divide-y divide-white/10">
-            <div
-              onClick={() => goToPage("/deposit")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-              💰 Deposit
-            </div>
-            <div
-              onClick={() => goToPage("/withdraw")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-              💸 Withdraw
-            </div>
-            <div
-              onClick={() => goToPage("/leadership")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-              🏆 Leadership
-            </div>
-             <div
-              onClick={() => goToPage("/settings")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-               Settings
-            </div>
-             <div
-              onClick={() => goToPage("/tournament-chat")}
-              className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
-            >
-             Tournament Chat
-            </div>
+            {[
+              { name: "Deposit", path: "/deposit" },
+              { name: "Withdraw", path: "/withdraw" },
+              { name: "Leaderboard", path: "/leadership" },
+              { name: "Settings", path: "/settings" },
+              { name: "Tournament Chat", path: "/tournament-chat" },
+            ].map((item, i) => (
+              <div
+                key={i}
+                onClick={() => goToPage(item.path)}
+                className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
+              >
+                💰 {item.name}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -219,13 +202,11 @@ const Deposit = () => {
         </div>
       </aside>
 
-      {/* ─── Header ───────────────────────────── */}
+      {/* Main Deposit Card */}
       <header style={{ textAlign: "center", marginBottom: "24px", marginTop: "40px"}}>
-       
         <h1 style={{ fontSize: "24px" }}>💰 Deposit</h1>
       </header>
 
-      {/* ─── Card ───────────────────────────── */}
       <div
         style={{
           background: "#121216",
@@ -270,13 +251,10 @@ const Deposit = () => {
           </button>
         </div>
 
-        {/* ─── CRYPTO DEPOSIT ───────────────────────────── */}
+        {/* CRYPTO DEPOSIT */}
         {method === "crypto" ? (
           <>
-            <label
-              htmlFor="crypto"
-              style={{ display: "block", margin: "12px 0 6px", fontWeight: 600 }}
-            >
+            <label htmlFor="crypto" style={{ display: "block", margin: "12px 0 6px", fontWeight: 600 }}>
               Select Cryptocurrency
             </label>
             <select
@@ -298,10 +276,7 @@ const Deposit = () => {
               <option value="ltc">Litecoin (LTC)</option>
             </select>
 
-            <label
-              htmlFor="amount"
-              style={{ display: "block", margin: "12px 0 6px", fontWeight: 600 }}
-            >
+            <label htmlFor="amount" style={{ display: "block", margin: "12px 0 6px", fontWeight: 600 }}>
               Enter Amount (USD)
             </label>
             <input
@@ -352,12 +327,7 @@ const Deposit = () => {
                 <img
                   src={qrUrl}
                   alt="QR Code"
-                  style={{
-                    width: "150px",
-                    height: "150px",
-                    borderRadius: "8px",
-                    margin: "15px 0",
-                  }}
+                  style={{ width: "150px", height: "150px", borderRadius: "8px", margin: "15px 0" }}
                 />
                 <p
                   style={{
@@ -372,24 +342,14 @@ const Deposit = () => {
               </div>
             )}
 
-            <div
-              style={{
-                textAlign: "center",
-                marginTop: "10px",
-                fontSize: "14px",
-                color: "#98a0a8",
-              }}
-            >
+            <div style={{ textAlign: "center", marginTop: "10px", fontSize: "14px", color: "#98a0a8" }}>
               Deposits are processed after network confirmation.
             </div>
           </>
         ) : (
-          /* ─── FIAT DEPOSIT ───────────────────────────── */
           <>
-            <label
-              htmlFor="currency"
-              style={{ display: "block", margin: "12px 0 6px", fontWeight: 600 }}
-            >
+            {/* FIAT DEPOSIT */}
+            <label htmlFor="currency" style={{ display: "block", margin: "12px 0 6px", fontWeight: 600 }}>
               Select Currency
             </label>
             <select
@@ -410,10 +370,7 @@ const Deposit = () => {
               <option value="GBP">Pound (£)</option>
             </select>
 
-            <label
-              htmlFor="fiatAmount"
-              style={{ display: "block", margin: "12px 0 6px", fontWeight: 600 }}
-            >
+            <label htmlFor="fiatAmount" style={{ display: "block", margin: "12px 0 6px", fontWeight: 600 }}>
               Enter Amount
             </label>
             <input
@@ -449,21 +406,14 @@ const Deposit = () => {
               Proceed to Payment
             </button>
 
-            <div
-              style={{
-                textAlign: "center",
-                marginTop: "10px",
-                fontSize: "14px",
-                color: "#98a0a8",
-              }}
-            >
+            <div style={{ textAlign: "center", marginTop: "10px", fontSize: "14px", color: "#98a0a8" }}>
               Fiat payments are processed instantly via secure gateway.
             </div>
           </>
         )}
       </div>
 
-      {/* ─── Back Button ───────────────────────────── */}
+      {/* Back Button */}
       <button
         onClick={() => navigate("/home")}
         style={{

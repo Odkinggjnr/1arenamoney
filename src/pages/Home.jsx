@@ -3,10 +3,12 @@ import { toast, ToastContainer } from "react-toastify";
 import { motion } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import Loading from "../components/Loading"; 
 
 const Home = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(false); 
   const [user, setUser] = useState({
     username: "Homelander",
     id: Math.floor(100000000 + Math.random() * 900000000),
@@ -42,9 +44,17 @@ const Home = () => {
     { id: 5, price: 20, win: 1600, img: "https://i.supaimg.com/34cac5bd-11c1-4ac5-a358-41c3390874f3.jpg" },
   ];
 
+  const navigateWithLoading = (path) => {
+    setLoading(true);
+    setTimeout(() => {
+      navigate(path);
+      setLoading(false);
+    }, 500); 
+  };
+
   const enterRoom = (roomId) => {
     toast.info(`Entering Room ${roomId}...`);
-    navigate(`/room/${roomId}`);
+    navigateWithLoading(`/room/${roomId}`);
   };
 
   return (
@@ -56,7 +66,10 @@ const Home = () => {
     >
       <ToastContainer position="top-right" autoClose={2500} />
 
-      {/* Overlay */}
+      {/* Overlay for main content only */}
+      {loading && !sidebarOpen && <Loading />} 
+
+      {/* Sidebar overlay */}
       {sidebarOpen && (
         <div
           onClick={toggleSidebar}
@@ -72,9 +85,10 @@ const Home = () => {
 
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <img
+            onClick={() => navigateWithLoading("/")}
             src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
             alt="Logo"
-            className="h-8 sm:h-10"
+            className="h-8 sm:h-10 cursor-pointer"
           />
         </div>
 
@@ -83,13 +97,13 @@ const Home = () => {
             ${user.balance.toFixed(2)}
           </div>
           <button
-            onClick={() => toast.info("Deposit feature coming soon!")}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-3 py-2 rounded-full text-xs sm:text-sm"
+            onClick={() => navigateWithLoading("/deposit")}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-3 py-2 rounded-full text-xs cursor-pointer sm:text-sm"
           >
             Deposit
           </button>
           <div
-            onClick={() => toast.info("No new notifications")}
+            onClick={() => navigateWithLoading("/notifications")}
             className="relative w-8 h-8 sm:w-9 sm:h-9 bg-[#2a2a2f] rounded-lg flex items-center justify-center text-lg cursor-pointer hover:scale-110 transition-transform"
           >
             🔔
@@ -127,26 +141,24 @@ const Home = () => {
           </div>
 
           <div className="divide-y divide-white/10">
-            {["Deposit", "Withdraw", "Leadership", "Settings", "Tournament Chat"].map((name, i) => (
+            {[ 
+              { name: "Deposit", path: "/deposit" },
+              { name: "Withdraw", path: "/withdraw" },
+              { name: "Leaderboard", path: "/leadership" },
+              { name: "Settings", path: "/settings" },
+              { name: "Tournament Chat", path: "/tournament-chat" },
+            ].map((item, i) => (
               <div
                 key={i}
-                onClick={() => toast.info(`${name} page coming soon!`)}
+                onClick={() => {
+                  toggleSidebar(); // close sidebar first
+                  setTimeout(() => {
+                    navigateWithLoading(item.path); // then navigate with loading
+                  }, 300);
+                }}
                 className="p-4 hover:bg-white/10 cursor-pointer flex justify-between items-center"
               >
-                <span>⭐</span> {name}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="border-t border-white/10 p-4 space-y-3">
-          <div className="flex gap-2 justify-center">
-            {["📘", "📸", "📌", "🌐"].map((icon, i) => (
-              <div
-                key={i}
-                className="w-8 h-8 bg-[#2d2d33] rounded-full flex items-center justify-center hover:bg-blue-500 transition"
-              >
-                {icon}
+                <span>⭐</span> {item.name}
               </div>
             ))}
           </div>
@@ -176,16 +188,16 @@ const Home = () => {
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-2 left-1/2 -translate-x-1/2 w-[95%] max-w-md bg-white/5 flex justify-between px-2 py-2 rounded-2xl backdrop-blur-md text-xs sm:text-sm text-gray-400">
-        {[
-          { name: "Home", icon: "https://cdn-icons-png.flaticon.com/512/25/25694.png", action: () => navigate("/") },
-          { name: "Leaderboard", icon: "https://cdn-icons-png.flaticon.com/512/5269/5269896.png" },
-          { name: "Deposit", icon: "https://cdn-icons-png.flaticon.com/512/906/906175.png" },
-          { name: "Withdraw", icon: "https://cdn-icons-png.flaticon.com/512/1828/1828859.png" },
+        {[ 
+          { name: "Home", icon: "https://cdn-icons-png.flaticon.com/512/25/25694.png", path: "/" },
+          { name: "Leaderboard", icon: "https://cdn-icons-png.flaticon.com/512/5269/5269896.png", path: "/leadership" },
+          { name: "Deposit", icon: "https://cdn-icons-png.flaticon.com/512/906/906175.png", path: "/deposit" },
+          { name: "Withdraw", icon: "https://cdn-icons-png.flaticon.com/512/1828/1828859.png", path: "/withdraw" },
         ].map((item, index) => (
           <div
             key={index}
             className="flex-1 text-center cursor-pointer hover:text-blue-400"
-            onClick={() => item.action ? item.action() : toast.info(`${item.name} page coming soon!`)}
+            onClick={() => navigateWithLoading(item.path)}
           >
             <img src={item.icon} alt={item.name} className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1" />
             {item.name}

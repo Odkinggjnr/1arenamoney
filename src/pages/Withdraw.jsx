@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 
 const Withdraw = () => {
+  const navigate = useNavigate();
   const [crypto, setCrypto] = useState("btc");
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
@@ -26,12 +27,12 @@ const Withdraw = () => {
 
       {/* Header */}
       <header className="text-center mb-6">
-        <img
+        <img onClick={() => navigate("/")}
           src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
           alt="Logo"
-          className="h-14 mx-auto mb-2"
+          className="h-14 mx-auto mb-2 cursor-pointer"
         />
-        <h1 className="text-2xl font-bold">💸 Withdraw</h1>
+        <h1 className="text-2xl font-bold mt-10">💸 Withdraw</h1>
       </header>
 
       {/* Withdraw Card */}
