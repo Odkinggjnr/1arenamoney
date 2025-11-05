@@ -166,7 +166,7 @@ const Home = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center grow transition-all">
+      <main className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center grow transition-all mb-20 md:mb-4">
         {rooms.map((room, index) => (
           <motion.div
             key={index}
@@ -187,7 +187,7 @@ const Home = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-2 left-1/2 -translate-x-1/2 w-[95%] max-w-md bg-white/5 flex justify-between px-2 py-2 rounded-2xl backdrop-blur-md text-xs sm:text-sm text-gray-400">
+      <nav className="fixed bottom-2 left-1/2 -translate-x-1/2 w-[95%] max-w-md bg-white/5 flex justify-between px-2 py-2 rounded-2xl backdrop-blur-md text-xs sm:text-sm text-gray-400 mb-4">
         {[ 
           { name: "Home", icon: "https://cdn-icons-png.flaticon.com/512/25/25694.png", path: "/" },
           { name: "Leaderboard", icon: "https://cdn-icons-png.flaticon.com/512/5269/5269896.png", path: "/leadership" },
