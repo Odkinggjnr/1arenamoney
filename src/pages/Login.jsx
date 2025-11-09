@@ -5,8 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading] = useState(false); // 👈 Added loading state
-
+  const [loading, setLoading] = useState(false); 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -102,7 +101,7 @@ const Login = () => {
             disabled={loading}
             className={`w-full py-3 mt-3 rounded-full text-white font-semibold transition-all ${loading
                 ? "bg-gray-600 cursor-not-allowed"
-                : "bg-gradient-to-r from-cyan-500 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.6)] hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(6,182,212,0.9)]"
+                : "bg-linear-to-r from-cyan-500 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.6)] hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(6,182,212,0.9)]"
               }`}
           >
             {loading ? "Logging in..." : "Login"}
