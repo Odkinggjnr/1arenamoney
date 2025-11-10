@@ -76,7 +76,7 @@ const Home = () => {
             onClick={() => navigateWithLoading("/home")}
             src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
             alt="Logo"
-            className="h-8 sm:h-10 cursor-pointer mr-4 md:mr-0"
+            className="h-8 sm:h-10 cursor-pointer mr-10 md:mr-0"
           />
         </div>
         <div className="flex items-center gap-2">
