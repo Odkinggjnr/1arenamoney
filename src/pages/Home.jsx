@@ -131,7 +131,7 @@ const Home = () => {
             <p className="text-gray-400 text-sm mb-3">Win up to ${room.win.toLocaleString()}</p>
             <button
               onClick={() => enterRoom(room.id)}
-              className="bg-blue-500 hover:bg-blue-600 py-3 w-full text-sm sm:text-base rounded-full font-semibold"
+              className="bg-blue-500 hover:bg-blue-600 py-3 w-full text-sm sm:text-base rounded-full font-semibold cursor-pointer transition"
             >
               Join
             </button>
@@ -165,7 +165,7 @@ const Header = ({ toggleSidebar, user, navigateWithLoading }) => (
       </div>
       <button
         onClick={() => navigateWithLoading("/deposit")}
-        className="bg-green-600 hover:bg-green-700 text-white font-semibold px-3 py-2 rounded-full text-xs sm:text-sm"
+        className="bg-green-600 hover:bg-green-700 text-white font-semibold px-3 py-2 rounded-full text-xs sm:text-sm cursor-pointer transition"
       >
         Deposit
       </button>
