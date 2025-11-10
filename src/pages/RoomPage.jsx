@@ -10,7 +10,7 @@ import Game4 from "./Game4";
 import Game5 from "./Game5";
 
 const RoomPage = () => {
-  const { id } = useParams();
+  const { roomId } = useParams();
   const [showConfetti, setShowConfetti] = useState(false);
   const [completed, setCompleted] = useState(false);
 
@@ -21,7 +21,7 @@ const RoomPage = () => {
   };
 
   let CurrentGame;
-  switch (id) {
+  switch (roomId) {
     case "1":
       CurrentGame = Game;
       break;
@@ -42,49 +42,25 @@ const RoomPage = () => {
   }
 
   return (
-    <motion.div
-      className="min-h-[70vh] flex flex-col items-center justify-center bg-linear-to-br from-blue-900 to-blue-900 text-white p-6"
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
+    <motion.div className="min-h-[70vh] flex flex-col items-center justify-center bg-linear-to-br from-blue-900 to-blue-900 text-white p-6" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
       {showConfetti && <Confetti />}
-
-      <motion.h1
-        className="text-2xl md:text-3xl font-bold mb-4 md:mb-6"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        Room {id}
+      <motion.h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        Room {roomId}
       </motion.h1>
 
       {CurrentGame ? (
-        <motion.div
-          className="w-full max-w-2xl bg-gray-800 rounded-xl shadow-2xl p-5 md:p-6"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.4 }}
-        >
+        <motion.div className="w-full max-w-2xl bg-gray-800 rounded-xl shadow-2xl p-5 md:p-6" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.4 }}>
           <CurrentGame onComplete={handleGameComplete} />
         </motion.div>
       ) : (
-        <motion.div
-          className="flex items-center justify-center h-48 text-xl font-semibold text-gray-300"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          Invalid Room 😅
+        <motion.div className="flex items-center justify-center h-48 text-xl font-semibold text-gray-300" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          Invalid Room
         </motion.div>
       )}
 
       {completed && (
-        <motion.div
-          className="mt-6 text-lg md:text-xl text-green-400 font-semibold"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          🎉 You’ve completed Room {id}!
+        <motion.div className="mt-6 text-lg md:text-xl text-green-400 font-semibold" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          🎉 You’ve completed Room {roomId}!
         </motion.div>
       )}
     </motion.div>

@@ -11,34 +11,22 @@ import Withdraw from "./pages/Withdraw";
 import Settings from "./pages/Settings";
 import Tournament from "./pages/Tournament";
 import RoomPage from "./pages/RoomPage";
+import Lobby from "./pages/Lobby";
 
 const App = () => {
-  // Check if user exists in localStorage (mock authentication)
-  const user = JSON.parse(localStorage.getItem("arenaXUser"));
+  const user = JSON.parse(localStorage.getItem("moneyRoomsUser"));
 
   return (
     <Routes>
       {/* Default route → redirect based on auth status */}
-      <Route
-        path="/"
-        element={user ? <Navigate to="/home" /> : <Navigate to="/login" />}
-      />
+      <Route path="/" element={user ? <Navigate to="/home" /> : <Navigate to="/login" />} />
 
       {/* Auth pages */}
-      <Route
-        path="/register"
-        element={!user ? <Register /> : <Navigate to="/home" />}
-      />
-      <Route
-        path="/login"
-        element={!user ? <Login /> : <Navigate to="/home" />}
-      />
+      <Route path="/register" element={!user ? <Register /> : <Navigate to="/home" />} />
+      <Route path="/login" element={!user ? <Login /> : <Navigate to="/home" />} />
 
-      {/* Protected route */}
-      <Route
-        path="/home"
-        element={user ? <Home /> : <Navigate to="/login" />}
-      />
+      {/* Protected routes */}
+      <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />} />
       <Route path="/deposit" element={<Deposit />} />
       <Route path="/leadership" element={<Leadership />} />
       <Route path="/notifications" element={<Notification />} />
@@ -46,7 +34,9 @@ const App = () => {
       <Route path="/withdraw" element={<Withdraw />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/tournament-chat" element={<Tournament />} />
-      <Route path="/room/:id" element={<RoomPage />} />
+
+      <Route path="/lobby/:roomId" element={<Lobby />} />
+      <Route path="/room/:roomId" element={<RoomPage />} />
     </Routes>
   );
 };

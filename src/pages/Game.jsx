@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -25,16 +24,18 @@ const QUESTIONS = [
 ];
 
 export default function Game() {
-  const { id } = useParams();
+  const { roomId } = useParams(); // ✅ updated param name
   const navigate = useNavigate();
+
+  const id = Number(roomId); // convert to number
 
   // Room validation
   useEffect(() => {
-    if (!id || isNaN(id) || id < 1 || id > 5) {
+    if (!roomId || isNaN(id) || id < 1 || id > 5) {
       toast.error("Invalid room. Redirecting to home...");
       setTimeout(() => navigate("/home"), 2000);
     }
-  }, [id, navigate]);
+  }, [id, roomId, navigate]);
 
   // Game states
   const [qIndex, setQIndex] = useState(0);
@@ -164,7 +165,7 @@ export default function Game() {
         setTransitioning(false);
         setSelected(null);
         setDisabled(true);
-        setShowLose(true); // lose screen
+        setShowLose(true);
         toast.error(`❌ Room ${id}: You were eliminated`);
       }, 900);
     }
@@ -204,7 +205,6 @@ export default function Game() {
       {showWin && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={200} />}
 
       <main className="relative z-20 flex flex-col items-center justify-center p-6 sm:p-10">
-        {/* Title */}
         <div className="text-center mb-6">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#00b0ff]">⚔️ Room {id} Battle Arena</h1>
           <p className="text-gray-400 text-sm mt-1">Answer fast. Stay alive. Win big.</p>
@@ -213,7 +213,6 @@ export default function Game() {
           </div>
         </div>
 
-        {/* Quiz */}
         {!showWin && !showLose && (
           <div className="w-full max-w-3xl bg-linear-to-b from-white/5 to-white/3 rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/6">
             <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight text-white text-center px-4">
@@ -221,7 +220,6 @@ export default function Game() {
             </h2>
             <p className="text-center mt-3 font-bold text-[#00b0ff]">$1 ⇒ $80</p>
 
-            {/* Timer */}
             <div className="mt-6 w-full">
               <div className="flex items-center justify-between text-sm text-gray-300 mb-2">
                 <div className="font-bold">Time remaining:</div>
@@ -236,7 +234,6 @@ export default function Game() {
               </div>
             </div>
 
-            {/* Answers */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
               {current.opts.map((opt, i) => {
                 const isCorrect = i === current.a;
@@ -268,13 +265,8 @@ export default function Game() {
           </div>
         )}
 
-        {/* Win */}
         {showWin && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mt-8 text-center"
-          >
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-8 text-center">
             <img
               src="https://i.supaimg.com/34cac011-0641-4f3c-af1b-58912ee3f561.png"
               alt="winner"
@@ -294,7 +286,6 @@ export default function Game() {
           </motion.div>
         )}
 
-        {/* Lose */}
         {showLose && (
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -307,9 +298,7 @@ export default function Game() {
               alt="lost"
               className="w-64 max-w-full drop-shadow-2xl mx-auto"
             />
-            <div className="mt-4 text-3xl font-extrabold text-red-500">
-              You were eliminated!
-            </div>
+            <div className="mt-4 text-3xl font-extrabold text-red-500">You were eliminated!</div>
             <div className="mt-6 flex gap-3 justify-center">
               <button onClick={() => navigate("/home")} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20">
                 Home

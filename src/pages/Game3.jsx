@@ -45,10 +45,19 @@ const QUESTIONS_BY_ROOM = {
 };
 
 export default function Game3() {
-  const { id } = useParams();
+  const { roomId } = useParams(); // ✅ updated param name
   const navigate = useNavigate();
-  const roomId = parseInt(id, 10);
-  const QUESTIONS = QUESTIONS_BY_ROOM[roomId] ?? QUESTIONS_BY_ROOM[1];
+  const id = Number(roomId); // convert to number
+
+  // Room validation
+  useEffect(() => {
+    if (!roomId || isNaN(id) || id < 1 || id > 5) {
+      toast.error("Invalid room. Redirecting to home...");
+      setTimeout(() => navigate("/home"), 2000);
+    }
+  }, [id, roomId, navigate]);
+
+  const QUESTIONS = QUESTIONS_BY_ROOM[id] ?? QUESTIONS_BY_ROOM[1];
 
   const [qIndex, setQIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10);
@@ -59,15 +68,6 @@ export default function Game3() {
   const [disabled, setDisabled] = useState(false);
 
   const timerRef = useRef(null);
-
-  // Validate room
-  useEffect(() => {
-    if (!roomId || isNaN(roomId) || roomId < 1 || roomId > 5) {
-      toast.error("Invalid room — redirecting to home...");
-      const t = setTimeout(() => navigate("/home"), 1600);
-      return () => clearTimeout(t);
-    }
-  }, [roomId, navigate]);
 
   // Timer logic
   useEffect(() => {
@@ -83,14 +83,12 @@ export default function Game3() {
 
   // Handle time out
   useEffect(() => {
-    if (timeLeft <= 0 && !showWin && !eliminated) handleTimeout();
-  }, [timeLeft]);
-
-  const handleTimeout = () => {
-    setDisabled(true);
-    setEliminated(true);
-    toast.warning("⏰ Time's up!");
-  };
+    if (timeLeft <= 0 && !showWin && !eliminated) {
+      setDisabled(true);
+      setEliminated(true);
+      toast.warning("⏰ Time's up!");
+    }
+  }, [timeLeft, showWin, eliminated]);
 
   const updatePlayersRemaining = (nextIndex) => {
     if (nextIndex > 0 && nextIndex < QUESTIONS.length - 1) {
@@ -120,7 +118,7 @@ export default function Game3() {
         if (next >= QUESTIONS.length) {
           setShowWin(true);
           setPlayersRemaining(1);
-          toast.success(`🏆 Room ${roomId}: You won!`);
+          toast.success(`🏆 Room ${id}: You won!`);
         } else {
           setQIndex(next);
         }
@@ -128,7 +126,7 @@ export default function Game3() {
     } else {
       setTimeout(() => {
         setEliminated(true);
-        toast.error(`❌ Room ${roomId}: You were eliminated`);
+        toast.error(`❌ Room ${id}: You were eliminated`);
       }, 900);
     }
   };
@@ -159,7 +157,7 @@ export default function Game3() {
         <div className="flex flex-col items-center mb-4">
           <img src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png" alt="Logo" className="h-16 rounded-lg drop-shadow-lg" />
           <div className="mt-2 font-extrabold text-[#00b0ff] text-center">
-            ⚔️ Room {roomId} — Battle Arena
+            ⚔️ Room {id} — Battle Arena
             <span className="ml-3 text-white font-normal">Players remaining: {playersRemaining}</span>
           </div>
         </div>
