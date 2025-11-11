@@ -11,7 +11,7 @@ const Register = () => {
   });
 
   const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading] = useState(false); // 👈 Added loading state
+  const [loading, setLoading] = useState(false); 
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,7 +33,7 @@ const Register = () => {
       }
 
       if (password !== confirm) {
-        toast.error("❌ Passwords do not match!", { position: "top-center" });
+        toast.error("Passwords do not match!", { position: "top-center" });
         setLoading(false);
         return;
       }
@@ -41,7 +41,7 @@ const Register = () => {
       const user = { username, email, password };
       localStorage.setItem("arenaXUser", JSON.stringify(user));
 
-      toast.success("✅ Signup successful! Redirecting to login...", {
+      toast.success("Signup successful!", {
         position: "top-center",
         autoClose: 2500,
       });

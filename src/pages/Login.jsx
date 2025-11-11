@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom"; // ✅ Added
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // ✅ Initialize React Router navigation
+
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -32,14 +35,22 @@ const Login = () => {
         storedUser.email === formData.email.trim() &&
         storedUser.password === formData.password.trim()
       ) {
-        toast.success("Login successful!", {
+        toast.success("✅ Login successful!", {
           position: "top-center",
           autoClose: 2000,
         });
+
+        // ✅ Store login flag
         localStorage.setItem("arenaXLoggedIn", "true");
-        setTimeout(() => (window.location.href = "/home"), 2000);
+
+        // ✅ Use React Router navigation (no reloads)
+        setTimeout(() => {
+          navigate("/home");
+        }, 2000);
       } else {
-        toast.error("❌ Invalid email or password!", { position: "top-center" });
+        toast.error("❌ Invalid email or password!", {
+          position: "top-center",
+        });
         setLoading(false);
       }
     }, 1500);
@@ -99,10 +110,11 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 mt-3 rounded-full text-white font-semibold transition-all ${loading
+            className={`w-full py-3 mt-3 rounded-full text-white font-semibold transition-all ${
+              loading
                 ? "bg-gray-600 cursor-not-allowed"
                 : "bg-linear-to-r from-cyan-500 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.6)] hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(6,182,212,0.9)]"
-              }`}
+            }`}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -110,7 +122,10 @@ const Login = () => {
 
         <p className="text-gray-300 text-sm mt-5">
           Don’t have an account?{" "}
-          <a href="/register" className="text-blue-500 hover:underline font-medium">
+          <a
+            href="/register"
+            className="text-blue-500 hover:underline font-medium"
+          >
             Create one
           </a>
         </p>
