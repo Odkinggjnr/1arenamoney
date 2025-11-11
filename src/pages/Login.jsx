@@ -3,7 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom"; 
 import "react-toastify/dist/ReactToastify.css";
 
-const Login = () => {
+const Login = ({ setUser }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,11 +20,11 @@ const Login = () => {
     if (loading) return;
     setLoading(true);
 
-    const storedUser = JSON.parse(localStorage.getItem("arenaXUser"));
+    const storedUser = JSON.parse(localStorage.getItem("moneyRoomsUser"));
 
     setTimeout(() => {
       if (!storedUser) {
-        toast.error("⚠️ No user found! Please sign up first.", {
+        toast.error("No user found! Please sign up first.", {
           position: "top-center",
         });
         setLoading(false);
@@ -40,10 +40,13 @@ const Login = () => {
           autoClose: 2000,
         });
 
-        
-        localStorage.setItem("arenaXLoggedIn", "true");
+        // ✅ Store user in localStorage
+        localStorage.setItem("moneyRoomsUser", JSON.stringify(storedUser));
 
-       
+        // ✅ Update App state
+        setUser(storedUser);
+
+        // ✅ Redirect to /home after toast
         setTimeout(() => {
           navigate("/home");
         }, 2000);

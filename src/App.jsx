@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
@@ -14,29 +14,44 @@ import RoomPage from "./pages/RoomPage";
 import Lobby from "./pages/Lobby";
 
 const App = () => {
-  const user = JSON.parse(localStorage.getItem("moneyRoomsUser"));
+
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("moneyRoomsUser")));
+
+ 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUser(JSON.parse(localStorage.getItem("moneyRoomsUser")));
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   return (
     <Routes>
-      {/* Default route → redirect based on auth status */}
       <Route path="/" element={user ? <Navigate to="/home" /> : <Navigate to="/login" />} />
 
-      {/* Auth pages */}
-      <Route path="/register" element={!user ? <Register /> : <Navigate to="/home" />} />
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/home" />} />
+     
+      <Route
+        path="/register"
+        element={!user ? <Register /> : <Navigate to="/home" />}
+      />
+      <Route
+        path="/login"
+        element={!user ? <Login setUser={setUser} /> : <Navigate to="/home" />}
+      />
 
       {/* Protected routes */}
       <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />} />
-      <Route path="/deposit" element={<Deposit />} />
-      <Route path="/leadership" element={<Leadership />} />
-      <Route path="/notifications" element={<Notification />} />
-      <Route path="/support" element={<Support />} />
-      <Route path="/withdraw" element={<Withdraw />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="/tournament-chat" element={<Tournament />} />
+      <Route path="/deposit" element={user ? <Deposit /> : <Navigate to="/login" />} />
+      <Route path="/leadership" element={user ? <Leadership /> : <Navigate to="/login" />} />
+      <Route path="/notifications" element={user ? <Notification /> : <Navigate to="/login" />} />
+      <Route path="/support" element={user ? <Support /> : <Navigate to="/login" />} />
+      <Route path="/withdraw" element={user ? <Withdraw /> : <Navigate to="/login" />} />
+      <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
+      <Route path="/tournament-chat" element={user ? <Tournament /> : <Navigate to="/login" />} />
 
-      <Route path="/lobby/:roomId" element={<Lobby />} />
-      <Route path="/room/:roomId" element={<RoomPage />} />
+      <Route path="/lobby/:roomId" element={user ? <Lobby /> : <Navigate to="/login" />} />
+      <Route path="/room/:roomId" element={user ? <RoomPage /> : <Navigate to="/login" />} />
     </Routes>
   );
 };
