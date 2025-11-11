@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"; // ✅ Added
+import { useNavigate } from "react-router-dom"; 
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // ✅ Initialize React Router navigation
+  const navigate = useNavigate(); 
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,20 +35,20 @@ const Login = () => {
         storedUser.email === formData.email.trim() &&
         storedUser.password === formData.password.trim()
       ) {
-        toast.success("✅ Login successful!", {
+        toast.success("Login successful!", {
           position: "top-center",
           autoClose: 2000,
         });
 
-        // ✅ Store login flag
+        
         localStorage.setItem("arenaXLoggedIn", "true");
 
-        // ✅ Use React Router navigation (no reloads)
+       
         setTimeout(() => {
           navigate("/home");
         }, 2000);
       } else {
-        toast.error("❌ Invalid email or password!", {
+        toast.error("Invalid email or password!", {
           position: "top-center",
         });
         setLoading(false);
