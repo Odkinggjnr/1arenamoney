@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Register = () => {
+const Register = ({ setUser }) => { 
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -39,14 +39,20 @@ const Register = () => {
       }
 
       const user = { username, email, password };
-      localStorage.setItem("arenaXUser", JSON.stringify(user));
+
+     
+      localStorage.setItem("moneyRoomsUser", JSON.stringify(user));
+
+    
+      setUser(user);
 
       toast.success("Signup successful!", {
         position: "top-center",
         autoClose: 2500,
       });
 
-      setTimeout(() => (window.location.href = "/login"), 2500);
+     
+      setTimeout(() => (window.location.href = "/home"), 2500);
     }, 1500);
   };
 
@@ -126,7 +132,7 @@ const Register = () => {
             className={`w-full py-3 mt-3 rounded-full text-white font-semibold transition-all ${
               loading
                 ? "bg-gray-600 cursor-not-allowed"
-                : "bg-gradient-to-r from-cyan-500 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.6)] hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(6,182,212,0.9)]"
+                : "bg-linear-to-r from-cyan-500 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.6)] hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(6,182,212,0.9)]"
             }`}
           >
             {loading ? "Creating account..." : "Sign Up"}
