@@ -32,12 +32,12 @@ const Login = () => {
         storedUser.email === formData.email.trim() &&
         storedUser.password === formData.password.trim()
       ) {
-        toast.success("✅ Login successful!", {
+        toast.success("Login successful!", {
           position: "top-center",
           autoClose: 2000,
         });
         localStorage.setItem("arenaXLoggedIn", "true");
-        setTimeout(() => (window.location.href = "/dashboard"), 2000);
+        setTimeout(() => (window.location.href = "/home"), 2000);
       } else {
         toast.error("❌ Invalid email or password!", { position: "top-center" });
         setLoading(false);
