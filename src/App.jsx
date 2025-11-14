@@ -14,10 +14,10 @@ import RoomPage from "./pages/RoomPage";
 import Lobby from "./pages/Lobby";
 
 const App = () => {
+  const [user, setUser] = useState(() =>
+    JSON.parse(localStorage.getItem("moneyRoomsUser"))
+  );
 
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("moneyRoomsUser")));
-
- 
   useEffect(() => {
     const handleStorageChange = () => {
       setUser(JSON.parse(localStorage.getItem("moneyRoomsUser")));
@@ -28,12 +28,16 @@ const App = () => {
 
   return (
     <Routes>
-      <Route path="/" element={user ? <Navigate to="/home" /> : <Navigate to="/login" />} />
+      {/* Default route → redirect based on auth status */}
+      <Route
+        path="/"
+        element={user ? <Navigate to="/home" /> : <Navigate to="/login" />}
+      />
 
-     
+      {/* Auth pages */}
       <Route
         path="/register"
-        element={!user ? <Register /> : <Navigate to="/home" />}
+        element={!user ? <Register setUser={setUser} /> : <Navigate to="/home" />}
       />
       <Route
         path="/login"

@@ -40,13 +40,13 @@ const Login = ({ setUser }) => {
           autoClose: 2000,
         });
 
-        // ✅ Store user in localStorage
+       
         localStorage.setItem("moneyRoomsUser", JSON.stringify(storedUser));
 
-        // ✅ Update App state
+       
         setUser(storedUser);
 
-        // ✅ Redirect to /home after toast
+      
         setTimeout(() => {
           navigate("/home");
         }, 2000);
