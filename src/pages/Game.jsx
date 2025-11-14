@@ -27,7 +27,7 @@ export default function Game() {
   const { roomId } = useParams(); // ✅ updated param name
   const navigate = useNavigate();
 
-  const id = Number(roomId); // convert to number
+  const id = Number(roomId); 
 
   // Room validation
   useEffect(() => {
