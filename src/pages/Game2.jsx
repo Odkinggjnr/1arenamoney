@@ -204,7 +204,7 @@ const Game2 = () => {
   const fillPercent = Math.max(0, Math.min(100, (timeLeft / 10) * 100));
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white antialiased overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white antialiased overflow-hidden flex-wrap">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -270,7 +270,7 @@ const Game2 = () => {
             className="inline-block mb-4"
           >
             <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 rounded-full shadow-lg border border-white/20">
-              <h1 className="text-xl sm:text-2xl font-extrabold flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-extrabold flex items-center gap-2 ">
                 <Zap size={24} />
                 Room {id} Battle Arena
               </h1>
@@ -296,9 +296,9 @@ const Game2 = () => {
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
-          className="w-full max-w-4xl"
+          className="min-w-fit max-w-5xl"
         >
-          <div className="bg-gradient-to-b from-slate-900/90 to-slate-800/90 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
+          <div className="bg-gradient-to-b from-slate-900/90 to-slate-800/90 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden flex-wrap">
             {!eliminated && !finished && (
               <>
                 {/* Question Header */}
@@ -372,7 +372,7 @@ const Game2 = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                      className="grid grid-cols-2 sm:grid-cols-2 gap-8 flex-wrap w-full pl-0 md:pl-4"
                     >
                       {current.opts.map((opt, i) => {
                         const isCorrect = i === current.a;
@@ -406,9 +406,9 @@ const Game2 = () => {
                             whileTap={selected === null ? { scale: 0.98 } : {}}
                             onClick={() => handleAnswer(i)}
                             disabled={selected !== null}
-                            className={`flex items-center gap-4 p-5 rounded-2xl text-left font-bold text-lg transition-all shadow-lg border-2 ${bgClass} ${textClass} disabled:cursor-not-allowed`}
+                            className={`flex items-center gap-4 p-2 md:p-5 rounded-2xl text-center font-medium text-sm md:text-lg transition-all shadow-lg border-2 ${bgClass} ${textClass} disabled:cursor-not-allowed flex-wrap min-w-[90px] md:w-auto`}
                           >
-                            <div className="min-w-12 min-h-12 rounded-xl flex items-center justify-center font-black text-xl bg-white/10 backdrop-blur-sm">
+                            <div className="min-w-12 text-center min-h-4 text-center rounded-xl flex items-center justify-center font-black text-lg bg-white/10 backdrop-blur-sm flex-wrap">
                               {String.fromCharCode(65 + i)}
                             </div>
                             <div className="flex-1">{opt}</div>
@@ -483,7 +483,7 @@ const Game2 = () => {
                         animate={{ rotate: [0, -5, 5, -5, 0] }}
                         transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 1 }}
                       >
-                        <XCircle size={100} className="mx-auto mb-6 text-red-500" />
+                        <XCircle size={90} className="mx-auto mb-6 text-red-500" />
                       </motion.div>
 
                       <h3 className="text-2xl sm:text-3xl font-extrabold text-red-500 mb-4">

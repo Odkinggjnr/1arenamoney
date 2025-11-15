@@ -352,7 +352,7 @@ const Game5 = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                      className="grid grid-cols-2 sm:grid-cols-2 gap-8 flex-wrap w-full pl-0 md:pl-4"
                     >
                       {current.opts.map((opt, i) => {
                         return (
@@ -364,9 +364,9 @@ const Game5 = () => {
                             whileHover={{ scale: 1.02, y: -4 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => handleAnswer(i)}
-                            className="flex items-center gap-4 p-5 rounded-2xl text-left font-bold text-lg transition-all shadow-lg border-2 bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 text-white"
+                            className="flex items-center gap-4 p-5 rounded-2xl text-left font-bold text-sm md:text-lg transition-all shadow-lg border-2 bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 text-white flex-wrap min-w-[90px] md:w-auto"
                           >
-                            <div className="min-w-12 min-h-12 rounded-xl flex items-center justify-center font-black text-xl bg-white/10 backdrop-blur-sm">
+                            <div className="min-w-12 min-h-8 rounded-xl flex items-center justify-center font-black text-lg bg-white/10 backdrop-blur-sm">
                               {String.fromCharCode(65 + i)}
                             </div>
                             <div className="flex-1">{opt}</div>
@@ -423,7 +423,7 @@ const Game5 = () => {
                         animate={{ rotate: [0, -5, 5, -5, 0], scale: [1, 1.05, 1] }}
                         transition={{ duration: 0.8, repeat: Infinity }}
                       >
-                        <X size={108} className="text-red-500 mx-auto" />
+                        <X size={90} className="text-red-500 mx-auto" />
                       </motion.div>
                       <h3 className="text-2xl sm:text-3xl font-extrabold text-red-400 mt-4">Eliminated</h3>
                       <p className="text-lg sm:text-xl mt-2 text-white/80">

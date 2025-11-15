@@ -360,7 +360,7 @@ const Game4 = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                      className="grid grid-cols-2 sm:grid-cols-2 gap-4 flex-wrap w-full pl-0 md:pl-4"
                     >
                       {current.opts.map((opt, i) => {
                         const isCorrect = i === current.a;
@@ -394,9 +394,9 @@ const Game4 = () => {
                             whileTap={selected === null ? { scale: 0.98 } : {}}
                             onClick={() => handleAnswer(i)}
                             disabled={selected !== null}
-                            className={`flex items-center gap-4 p-5 rounded-2xl text-left font-bold text-lg transition-all shadow-lg border-2 ${bgClass} ${textClass} disabled:cursor-not-allowed`}
+                            className={`flex items-center gap-8 p-2 rounded-2xl text-center font-bold md:text-lg text-sm transition-all shadow-lg border-2 ${bgClass} ${textClass} disabled:cursor-not-allowed flex-wrap min-w-[90px] md:w-auto`}
                           >
-                            <div className="min-w-12 min-h-12 rounded-xl flex items-center justify-center font-black text-xl bg-white/10 backdrop-blur-sm">
+                            <div className="min-w-12 min-h-8 rounded-xl flex items-center text-center justify-center font-black text-lg bg-white/10 backdrop-blur-sm flex-wrap">
                               {String.fromCharCode(65 + i)}
                             </div>
                             <div className="flex-1">{opt}</div>

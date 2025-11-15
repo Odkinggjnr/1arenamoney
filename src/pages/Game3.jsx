@@ -315,7 +315,7 @@ export default function Game3() {
 
                   {/* Answer Options */}
                   <AnimatePresence mode="wait">
-                    <motion.div key={qIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <motion.div key={qIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-2 sm:grid-cols-2 gap-4 w-full flex-wrap">
                       {(current?.opts || []).map((opt, i) => {
                         const isCorrect = i === current.a;
                         const isSelected = selected === i;
@@ -348,9 +348,9 @@ export default function Game3() {
                             whileTap={!disabled ? { scale: 0.98 } : {}}
                             onClick={() => handleAnswer(i)}
                             disabled={disabled}
-                            className={`flex items-center gap-4 p-5 rounded-2xl text-left font-bold text-lg transition-all shadow-lg border-2 ${bgClass} ${textClass} disabled:cursor-not-allowed`}
+                            className={`flex items-center gap-4 p-5 rounded-2xl text-center font-bold text-sm transition-all shadow-lg border-2 ${bgClass} ${textClass} disabled:cursor-not-allowed w-full flex-wrap`}
                           >
-                            <div className="min-w-12 min-h-12 rounded-xl flex items-center justify-center font-black text-xl bg-white/10 backdrop-blur-sm">{String.fromCharCode(65 + i)}</div>
+                            <div className="min-w-12 min-h-4 rounded-xl flex items-center justify-center font-black text-lg bg-white/10 backdrop-blur-sm text-center">{String.fromCharCode(65 + i)}</div>
                             <div className="flex-1">{opt}</div>
                             {disabled && isCorrect && <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring" }}><CheckCircle2 size={24} /></motion.div>}
                             {disabled && isSelected && !isCorrect && <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring" }}><XCircle size={24} /></motion.div>}

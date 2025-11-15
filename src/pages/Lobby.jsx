@@ -115,7 +115,7 @@ const Lobby = () => {
   const prizeColors = ["text-yellow-400", "text-gray-300", "text-amber-600"];
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 text-white overflow-hidden relative">
+    <div className="md:min-h-screen flex flex-col items-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 text-white overflow-hidden relative">
 
       {/* Alerts */}
       <AnimatePresence>
