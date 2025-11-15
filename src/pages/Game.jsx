@@ -1,9 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { motion } from "framer-motion";
-import Confetti from "react-confetti";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { 
+  Trophy, 
+  X, 
+  Home, 
+  RotateCcw, 
+  Users, 
+  Clock, 
+  Zap,
+  AlertCircle,
+  CheckCircle2,
+  XCircle
+} from "lucide-react";
 
 const QUESTIONS = [
   { q: "What is the capital city of France?", opts: ["Rome", "Madrid", "Paris", "Berlin"], a: 2 },
@@ -23,19 +32,111 @@ const QUESTIONS = [
   { q: "Which is the hardest natural substance?", opts: ["Gold", "Iron", "Diamond", "Steel"], a: 2 },
 ];
 
-export default function Game() {
-  const { roomId } = useParams(); // ✅ updated param name
-  const navigate = useNavigate();
+// Enhanced Confetti Component
+const EnhancedConfetti = () => {
+  const confettiPieces = Array.from({ length: 80 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.5,
+    duration: 2 + Math.random() * 2,
+    color: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'][Math.floor(Math.random() * 6)]
+  }));
 
-  const id = Number(roomId); 
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+      {confettiPieces.map((piece) => (
+        <motion.div
+          key={piece.id}
+          className="absolute w-3 h-3 rounded-full"
+          style={{
+            left: `${piece.left}%`,
+            top: '-20px',
+            backgroundColor: piece.color,
+          }}
+          initial={{ y: -20, opacity: 1, rotate: 0 }}
+          animate={{
+            y: window.innerHeight + 20,
+            opacity: [1, 1, 0],
+            rotate: 360 * 3,
+            x: [0, (Math.random() - 0.5) * 200]
+          }}
+          transition={{
+            duration: piece.duration,
+            delay: piece.delay,
+            ease: "linear"
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
-  // Room validation
-  useEffect(() => {
-    if (!roomId || isNaN(id) || id < 1 || id > 5) {
-      toast.error("Invalid room. Redirecting to home...");
-      setTimeout(() => navigate("/home"), 2000);
+// Custom Toast Alert Component
+const CustomToast = ({ type, message, onClose }) => {
+  const config = {
+    success: {
+      icon: CheckCircle2,
+      gradient: "from-emerald-500 to-teal-500",
+      iconColor: "text-emerald-100"
+    },
+    error: {
+      icon: XCircle,
+      gradient: "from-red-500 to-rose-500",
+      iconColor: "text-red-100"
+    },
+    warning: {
+      icon: AlertCircle,
+      gradient: "from-amber-500 to-orange-500",
+      iconColor: "text-amber-100"
+    },
+    info: {
+      icon: Zap,
+      gradient: "from-blue-500 to-indigo-500",
+      iconColor: "text-blue-100"
     }
-  }, [id, roomId, navigate]);
+  };
+
+  const { icon: Icon, gradient, iconColor } = config[type] || config.info;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -50, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, x: 300 }}
+      transition={{ type: "spring", damping: 20, stiffness: 300 }}
+      className={`fixed top-6 right-6 z-50 bg-gradient-to-r ${gradient} backdrop-blur-xl text-white px-6 py-4 rounded-2xl shadow-2xl border border-white/20 max-w-md`}
+    >
+      <div className="flex items-center gap-3">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 0.5 }}
+        >
+          <Icon className={iconColor} size={24} />
+        </motion.div>
+        <p className="flex-1 font-semibold">{message}</p>
+        <motion.button
+          whileHover={{ scale: 1.1, rotate: 90 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={onClose}
+          className="text-white/80 hover:text-white"
+        >
+          <X size={18} />
+        </motion.button>
+      </div>
+      <motion.div
+        className="mt-3 h-1 bg-white/20 rounded-full overflow-hidden"
+        initial={{ width: "100%" }}
+        animate={{ width: "0%" }}
+        transition={{ duration: 3, ease: "linear" }}
+      />
+    </motion.div>
+  );
+};
+
+export default function Game() {
+  const navigate = useNavigate();
+  const [roomId] = useState("1"); // Demo room
+  const id = Number(roomId);
 
   // Game states
   const [qIndex, setQIndex] = useState(0);
@@ -46,65 +147,17 @@ export default function Game() {
   const [showWin, setShowWin] = useState(false);
   const [showLose, setShowLose] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [toasts, setToasts] = useState([]);
 
   const timerRef = useRef(null);
-  const canvasRef = useRef(null);
-  const particlesRef = useRef([]);
 
-  // Canvas particles
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-
-    let W = (canvas.width = window.innerWidth);
-    let H = (canvas.height = window.innerHeight);
-
-    const COUNT = Math.max(30, Math.floor((W * H) / 120000));
-    const particles = [];
-    for (let i = 0; i < COUNT; i++) {
-      particles.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: 0.6 + Math.random() * 2.2,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.2) * 0.5,
-        alpha: 0.06 + Math.random() * 0.18,
-        hue: 195 + Math.random() * 45,
-      });
-    }
-    particlesRef.current = particles;
-
-    const handleResize = () => {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", handleResize);
-
-    let raf = null;
-    const draw = () => {
-      ctx.clearRect(0, 0, W, H);
-      particlesRef.current.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < -50) p.x = W + 50;
-        if (p.x > W + 50) p.x = -50;
-        if (p.y < -50) p.y = H + 50;
-        if (p.y > H + 50) p.y = -50;
-        ctx.beginPath();
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${p.alpha})`;
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      raf = requestAnimationFrame(draw);
-    };
-    draw();
-
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  const showToast = (type, message) => {
+    const newToast = { id: Date.now(), type, message };
+    setToasts(prev => [...prev, newToast]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== newToast.id));
+    }, 3000);
+  };
 
   // Timer
   useEffect(() => {
@@ -155,7 +208,7 @@ export default function Game() {
         disableAnswers(false);
         if (next >= QUESTIONS.length) {
           setShowWin(true);
-          toast.success(`🏆 Room ${id}: You won!`);
+          showToast("success", `🏆 Room ${id}: You won!`);
         } else {
           setQIndex(next);
         }
@@ -166,7 +219,7 @@ export default function Game() {
         setSelected(null);
         setDisabled(true);
         setShowLose(true);
-        toast.error(`❌ Room ${id}: You were eliminated`);
+        showToast("error", `❌ Room ${id}: You were eliminated`);
       }, 900);
     }
   };
@@ -179,7 +232,7 @@ export default function Game() {
       setTransitioning(false);
       setDisabled(true);
       setShowLose(true);
-      toast.warning("⏰ Time's up!");
+      showToast("warning", "⏰ Time's up!");
     }, 900);
   };
 
@@ -194,124 +247,203 @@ export default function Game() {
     setTimeLeft(10);
   };
 
+  const handleGoHome = () => {
+    showToast("info", "Returning to home...");
+    navigate("/");
+  };
+
   const current = QUESTIONS[qIndex];
   const fillPercent = Math.max(0, Math.min(100, (timeLeft / 10) * 100));
 
   return (
-    <div className="relative min-h-screen bg-black text-white antialiased overflow-hidden">
-      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
-      <canvas ref={canvasRef} className="fixed inset-0 z-0 pointer-events-none w-full h-full" />
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 text-white antialiased overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.2, 0.1],
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.08, 0.15, 0.08],
+          }}
+          transition={{ duration: 10, repeat: Infinity, delay: 1 }}
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
+        />
+      </div>
 
-      {showWin && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={200} />}
+      {/* Toast Notifications */}
+      <AnimatePresence>
+        {toasts.map(toast => (
+          <CustomToast
+            key={toast.id}
+            type={toast.type}
+            message={toast.message}
+            onClose={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+          />
+        ))}
+      </AnimatePresence>
 
-      <main className="relative z-20 flex flex-col items-center justify-center p-6 sm:p-10">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#00b0ff]">⚔️ Room {id} Battle Arena</h1>
-          <p className="text-gray-400 text-sm mt-1">Answer fast. Stay alive. Win big.</p>
-          <div className="mt-2 font-extrabold text-accent-2 text-lg text-white">
-            Players remaining: {playersRemaining}
-          </div>
-        </div>
+      {/* Confetti */}
+      <AnimatePresence>
+        {showWin && <EnhancedConfetti />}
+      </AnimatePresence>
 
+      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 sm:p-10">
+        {/* Header Section */}
+        <motion.div
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100 }}
+          className="text-center mb-8"
+        >
+          <motion.div
+            animate={{ rotate: [0, -5, 5, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            className="inline-block mb-4"
+          >
+            <div className="bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-3 rounded-full shadow-lg border border-white/20">
+              <h1 className="text-2xl sm:text-3xl font-extrabold flex items-center gap-2">
+                <Zap size={28} />
+                Room {id} Battle Arena
+              </h1>
+            </div>
+          </motion.div>
+          
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-400 text-sm mb-4"
+          >
+            Answer fast. Stay alive. Win big.
+          </motion.p>
+
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", delay: 0.3 }}
+            className="inline-flex items-center gap-2 bg-white/5 backdrop-blur-sm px-6 py-3 rounded-full border border-white/10"
+          >
+            <Users className="text-blue-400" size={20} />
+            <span className="font-bold text-lg">
+              Players remaining: <span className="text-blue-400">{playersRemaining}</span>
+            </span>
+          </motion.div>
+        </motion.div>
+
+        {/* Game Question Card */}
         {!showWin && !showLose && (
-          <div className="w-full max-w-3xl bg-linear-to-b from-white/5 to-white/3 rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/6">
-            <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight text-white text-center px-4">
-              {current?.q ?? "Loading question..."}
-            </h2>
-            <p className="text-center mt-3 font-bold text-[#00b0ff]">$1 ⇒ $80</p>
-
-            <div className="mt-6 w-full">
-              <div className="flex items-center justify-between text-sm text-gray-300 mb-2">
-                <div className="font-bold">Time remaining:</div>
-                <div className="font-mono font-bold">{Math.max(0, timeLeft)}s</div>
-              </div>
-              <div className="w-full bg-white/5 rounded-full h-3 overflow-hidden border border-white/5">
-                <div
-                  className="h-full bg-linear-to-r from-[#00b0ff] to-[#1e90ff] shadow-md transition-all"
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
+            className="w-full max-w-4xl"
+          >
+          <div className="bg-gradient-to-tr from-slate-900 via-blue-950 to-slate-900 p-8 rounded-3xl shadow-2xl border border-white/10">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold">{current.q}</h2>
+              <div className="w-24 h-6 bg-white/10 rounded-full overflow-hidden border border-white/20">
+                <motion.div
                   style={{ width: `${fillPercent}%` }}
-                  aria-hidden="true"
+                  className="h-6 bg-gradient-to-r from-cyan-400 to-blue-500"
+                  transition={{ duration: 0.5, ease: "linear" }}
                 />
               </div>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-              {current.opts.map((opt, i) => {
-                const isCorrect = i === current.a;
-                const isSelected = selected === i;
-                let base = "flex items-center gap-4 p-4 rounded-lg text-left font-extrabold text-lg transition-transform shadow";
-                let extra = "bg-white/5 border border-white/6 hover:-translate-y-1";
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {current.opts.map((opt, idx) => {
+                const isCorrect = idx === current.a;
+                const isSelected = idx === selected;
+                let bgColor = "bg-white/5 hover:bg-white/10";
                 if (disabled) {
-                  if (isCorrect) extra = "bg-green-500/80 text-[#04260b]";
-                  else if (isSelected && !isCorrect) extra = "bg-red-500/80 text-[#3b0707]";
-                  else extra = "bg-white/3 text-gray-200";
-                } else if (isSelected) extra = "ring-2 ring-[#1e90ff]/60";
+                  if (isCorrect) bgColor = "bg-emerald-600/40";
+                  else if (isSelected) bgColor = "bg-rose-600/40";
+                } else if (isSelected) {
+                  bgColor = "bg-blue-500/40 hover:bg-blue-500/50";
+                }
 
                 return (
-                  <button
-                    key={i}
-                    onClick={() => handleAnswer(i)}
-                    disabled={disabled || transitioning}
-                    className={`${base} ${extra}`}
+                  <motion.button
+                    key={idx}
+                    onClick={() => handleAnswer(idx)}
+                    disabled={disabled}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className={`p-4 rounded-2xl text-left font-semibold transition-colors duration-300 ${bgColor}`}
                   >
-                    <div className="min-w-12 min-h-12 rounded-lg flex items-center justify-center font-black text-xl text-[#00b0ff] bg-[#0a2233]/40">
-                      {String.fromCharCode(65 + i)}
-                    </div>
-                    <div className="flex-1">{opt}</div>
-                  </button>
+                    {opt}
+                  </motion.button>
                 );
               })}
             </div>
           </div>
+        </motion.div>
         )}
 
+        {/* Win Screen */}
         {showWin && (
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-8 text-center">
-            <img
-              src="https://i.supaimg.com/34cac011-0641-4f3c-af1b-58912ee3f561.png"
-              alt="winner"
-              className="w-64 max-w-full drop-shadow-2xl mx-auto"
-            />
-            <div className="mt-4 text-3xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-[#00b0ff] via-[#1e90ff] to-[#16a34a]">
-              You just won $80!
-            </div>
-            <div className="mt-6 flex gap-3 justify-center">
-              <button onClick={() => navigate("/home")} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20">
-                Home
-              </button>
-              <button onClick={handleRestart} className="px-4 py-2 rounded-lg bg-[#00b0ff] hover:bg-[#00a6e6]">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 120 }}
+            className="flex flex-col items-center gap-6 p-8 bg-gradient-to-tr from-emerald-700 to-emerald-500 rounded-3xl shadow-2xl border border-white/20 max-w-lg"
+          >
+            <Trophy size={48} className="text-yellow-400 animate-bounce" />
+            <h2 className="text-2xl font-bold">Congratulations!</h2>
+            <p className="text-white/90 text-center">You won Room {id} Battle Arena </p>
+            <div className="flex gap-4">
+              <button
+                onClick={handleRestart}
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-semibold cursor-pointer"
+              >
                 Play Again
+              </button>
+              <button
+                onClick={handleGoHome}
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-semibold cursor-pointer"
+              >
+                Home
               </button>
             </div>
           </motion.div>
         )}
 
+        {/* Lose Screen */}
         {showLose && (
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: [0, -10, 10, -10, 10, 0] }}
-            transition={{ duration: 0.6 }}
-            className="mt-8 text-center"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 120 }}
+            className="flex flex-col items-center gap-6 p-8 bg-gradient-to-tr from-rose-700 to-rose-500 rounded-3xl shadow-2xl border border-white/20 max-w-lg"
           >
-            <img
-              src="https://i.supaimg.com/2d2c0111-1234-4f3c-af1b-58912ee3f561.png"
-              alt="lost"
-              className="w-64 max-w-full drop-shadow-2xl mx-auto"
-            />
-            <div className="mt-4 text-3xl font-extrabold text-red-500">You were eliminated!</div>
-            <div className="mt-6 flex gap-3 justify-center">
-              <button onClick={() => navigate("/home")} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20">
-                Home
-              </button>
-              <button onClick={handleRestart} className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600">
+            <XCircle size={48} className="text-red-400 animate-pulse" />
+            <h2 className="text-2xl font-bold">You were eliminated!</h2>
+            <p className="text-white/90 text-center">Better luck next time in Room {id}</p>
+            <div className="flex gap-4">
+              <button
+                onClick={handleRestart}
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-semibold cursor-pointer"
+              >
                 Try Again
+              </button>
+              <button
+                onClick={handleGoHome}
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-semibold cursor-pointer"
+              >
+                Home
               </button>
             </div>
           </motion.div>
         )}
       </main>
-
-      <style>{`:root{--accent-2: #00b0ff;}`}</style>
     </div>
   );
 }
