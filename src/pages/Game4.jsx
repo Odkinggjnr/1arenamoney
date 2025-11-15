@@ -1,7 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import Confetti from "react-confetti";
-import { useNavigate, useParams } from "react-router-dom";
+import {
+  Trophy,
+  X,
+  Home,
+  RotateCcw,
+  Users,
+  Clock,
+  Zap,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  Sparkles
+} from "lucide-react";
 
 const questions = [
   { q: "What is the largest desert in the world?", opts: ["Sahara", "Antarctica", "Arabian", "Gobi"], a: 1 },
@@ -16,69 +28,102 @@ const questions = [
   { q: "What is the capital city of Canada?", opts: ["Toronto", "Ottawa", "Vancouver", "Montreal"], a: 1 },
 ];
 
+// Enhanced Confetti Component
+const EnhancedConfetti = () => {
+  const confettiPieces = Array.from({ length: 80 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.5,
+    duration: 2 + Math.random() * 2,
+    color: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'][Math.floor(Math.random() * 6)]
+  }));
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+      {confettiPieces.map((piece) => (
+        <motion.div
+          key={piece.id}
+          className="absolute w-3 h-3 rounded-full"
+          style={{
+            left: `${piece.left}%`,
+            top: '-20px',
+            backgroundColor: piece.color,
+          }}
+          initial={{ y: -20, opacity: 1, rotate: 0 }}
+          animate={{
+            y: window.innerHeight + 20,
+            opacity: [1, 1, 0],
+            rotate: 360 * 3,
+            x: [0, (Math.random() - 0.5) * 200]
+          }}
+          transition={{
+            duration: piece.duration,
+            delay: piece.delay,
+            ease: "linear"
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// Custom Feedback Toast
+const FeedbackToast = ({ type, message, onClose }) => {
+  const config = {
+    correct: {
+      icon: CheckCircle2,
+      gradient: "from-emerald-500 to-teal-500",
+      iconColor: "text-emerald-100"
+    },
+    wrong: {
+      icon: XCircle,
+      gradient: "from-red-500 to-rose-500",
+      iconColor: "text-red-100"
+    },
+    timeout: {
+      icon: AlertCircle,
+      gradient: "from-amber-500 to-orange-500",
+      iconColor: "text-amber-100"
+    }
+  };
+
+  const { icon: Icon, gradient, iconColor } = config[type] || config.wrong;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -50, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      transition={{ type: "spring", damping: 20, stiffness: 300 }}
+      className={`fixed top-6 left-1/2 -translate-x-1/2 z-40 bg-gradient-to-r ${gradient} backdrop-blur-xl text-white px-8 py-5 rounded-2xl shadow-2xl border border-white/20 max-w-md`}
+    >
+      <div className="flex items-center gap-3">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], rotate: type === 'correct' ? [0, 360] : [0, -10, 10, -10, 0] }}
+          transition={{ duration: 0.6 }}
+        >
+          <Icon className={iconColor} size={32} />
+        </motion.div>
+        <p className="flex-1 font-bold text-xl">{message}</p>
+      </div>
+    </motion.div>
+  );
+};
+
 const Game4 = () => {
+  const { roomId } = useParams();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const roomId = parseInt(id, 10) || 1;
+  const id = parseInt(roomId, 10) || 1;
 
   const [qIndex, setQIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10);
   const [players, setPlayers] = useState(100);
   const [selected, setSelected] = useState(null);
-  const [feedback, setFeedback] = useState("");
-  const [feedbackType, setFeedbackType] = useState("");
+  const [feedback, setFeedback] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [eliminated, setEliminated] = useState(false);
   const [finished, setFinished] = useState(false);
   const timerRef = useRef(null);
-  const canvasRef = useRef(null);
-
-  // 🎨 Particle background
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    let W = (canvas.width = window.innerWidth);
-    let H = (canvas.height = window.innerHeight);
-    const particles = [];
-    const COUNT = Math.max(30, Math.floor((W * H) / 120000));
-
-    for (let i = 0; i < COUNT; i++) {
-      particles.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: 0.6 + Math.random() * 2.2,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.2) * 0.5,
-        alpha: 0.06 + Math.random() * 0.18,
-        hue: 195 + Math.random() * 45,
-      });
-    }
-
-    const draw = () => {
-      ctx.clearRect(0, 0, W, H);
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < -50) p.x = W + 50;
-        if (p.x > W + 50) p.x = -50;
-        if (p.y < -50) p.y = H + 50;
-        if (p.y > H + 50) p.y = -50;
-        ctx.beginPath();
-        ctx.fillStyle = `hsla(${p.hue},80%,60%,${p.alpha})`;
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      requestAnimationFrame(draw);
-    };
-    draw();
-
-    const handleResize = () => {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // 🕒 Timer
   useEffect(() => {
@@ -105,30 +150,33 @@ const Game4 = () => {
     const correct = questions[qIndex].a;
 
     if (i === correct) {
-      setFeedback("✅ Correct!");
-      setFeedbackType("ok");
+      setFeedback({ type: 'correct', message: '✅ Correct!' });
       setPlayers((prev) => Math.max(1, prev - Math.floor(Math.random() * 10 + 1)));
       setTimeout(() => {
+        setFeedback(null);
         if (qIndex + 1 === questions.length) {
           setShowConfetti(true);
           setFinished(true);
         } else {
           setQIndex(qIndex + 1);
           setSelected(null);
-          setFeedback("");
         }
       }, 1000);
     } else {
-      setFeedback("❌ Wrong Answer!");
-      setFeedbackType("bad");
-      setTimeout(() => setEliminated(true), 1200);
+      setFeedback({ type: 'wrong', message: '❌ Wrong Answer!' });
+      setTimeout(() => {
+        setFeedback(null);
+        setEliminated(true);
+      }, 1200);
     }
   };
 
   const handleTimeout = () => {
-    setFeedback("⏰ Time's Up!");
-    setFeedbackType("bad");
-    setTimeout(() => setEliminated(true), 1000);
+    setFeedback({ type: 'timeout', message: '⏰ Time\'s Up!' });
+    setTimeout(() => {
+      setFeedback(null);
+      setEliminated(true);
+    }, 1000);
   };
 
   const handleTryAgain = () => {
@@ -136,137 +184,334 @@ const Game4 = () => {
     setPlayers(100);
     setTimeLeft(10);
     setSelected(null);
-    setFeedback("");
-    setFeedbackType("");
+    setFeedback(null);
     setShowConfetti(false);
     setEliminated(false);
     setFinished(false);
   };
 
-  const handleRestart = () => navigate("/home");
+  const handleGoHome = () => {
+   navigate("/");
+  };
+
   const current = questions[qIndex];
+  const fillPercent = Math.max(0, Math.min(100, (timeLeft / 10) * 100));
 
   return (
-    <div className="relative min-h-screen bg-[#031025] text-white flex flex-col justify-center items-center overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
-      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-950 via-green-950 to-slate-950 text-white antialiased overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], opacity: [0.08, 0.15, 0.08] }}
+          transition={{ duration: 10, repeat: Infinity, delay: 1 }}
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl"
+        />
+      </div>
 
-      <motion.div
-        className="relative z-10 w-[92%] sm:w-[85%] md:w-[700px] lg:w-[750px] bg-white/5 border border-white/10 p-4 sm:p-6 md:p-8 rounded-2xl text-center shadow-2xl"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-      >
-        <div className="flex flex-col items-center mb-4">
-          <img
-            src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
-            alt="Logo"
-            className="h-12 sm:h-14 md:h-16 rounded-lg drop-shadow-lg"
+      {/* Feedback Toast */}
+      <AnimatePresence>
+        {feedback && (
+          <FeedbackToast
+            type={feedback.type}
+            message={feedback.message}
+            onClose={() => setFeedback(null)}
           />
-          <div className="mt-2 text-sm sm:text-base font-extrabold text-[#00b0ff] text-center">
-            ⚔️ Room {roomId} — Battle Arena
-            <span className="ml-2 sm:ml-3 text-white font-normal block sm:inline">
-              Players remaining: {players}
-            </span>
-          </div>
-        </div>
-
-        {/* Main Game Section */}
-        {!eliminated && !finished && (
-          <>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={qIndex}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.4 }}
-              >
-                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-6 leading-snug">
-                  {current.q}
-                </div>
-
-                <div className="mb-4">
-                  <div className="text-gray-400 font-bold mb-1 text-sm sm:text-base">
-                    Time remaining: {timeLeft}s
-                  </div>
-                  <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-linear-to-r from-[#00b0ff] to-[#1e90ff] transition-all duration-200"
-                      style={{ width: `${(timeLeft / 10) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                  {current.opts.map((opt, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleAnswer(i)}
-                      className={`flex items-center gap-3 px-3 py-3 sm:px-4 sm:py-4 rounded-xl border border-white/10 text-sm sm:text-base md:text-lg font-bold hover:scale-105 transition-transform ${
-                        selected === null
-                          ? "bg-white/5"
-                          : i === current.a
-                          ? "bg-green-500 text-white"
-                          : selected === i
-                          ? "bg-red-500 text-white"
-                          : "bg-white/5 opacity-60"
-                      }`}
-                    >
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-[#00b0ff]/10 rounded-md font-bold text-[#00b0ff]">
-                        {String.fromCharCode(65 + i)}
-                      </div>
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-
-                <div
-                  className={`mt-4 font-bold text-sm sm:text-lg ${
-                    feedbackType === "ok" ? "text-green-400" : "text-red-400"
-                  }`}
-                >
-                  {feedback}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </>
         )}
+      </AnimatePresence>
 
-        {/* Result Section */}
-        {(eliminated || finished) && (
-          <motion.div className="mt-6 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {finished ? (
-              <>
-                <img
-                  src="https://i.supaimg.com/34cac011-0641-4f3c-af1b-58912ee3f561.png"
-                  alt="Winner"
-                  className="w-36 sm:w-44 md:w-48 max-w-full drop-shadow-2xl mx-auto"
-                />
-                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-[#00b0ff] via-[#1e90ff] to-[#16a34a]">
-                  You just won $1,200!
-                </div>
-              </>
-            ) : (
-              <div className="text-red-400 font-bold text-lg sm:text-xl">❌ Game Over</div>
-            )}
+      {/* Confetti */}
+      <AnimatePresence>
+        {showConfetti && <EnhancedConfetti />}
+      </AnimatePresence>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-4">
-              <button
-                onClick={handleTryAgain}
-                className="px-4 py-2 bg-green-500 hover:bg-green-400 rounded-lg font-bold"
-              >
-                {finished ? "Play Again" : "Try Again"}
-              </button>
-              <button
-                onClick={handleRestart}
-                className="px-4 py-2 bg-linear-to-r from-[#1e90ff] to-[#00b0ff] hover:opacity-90 rounded-lg font-bold"
-              >
-                Home
-              </button>
+      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6">
+        {/* Header Section */}
+        <motion.div
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100 }}
+          className="text-center mb-8"
+        >
+          {/* Logo */}
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", delay: 0.2 }}
+            className="mb-4"
+          >
+            <img
+              src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
+              alt="Logo"
+              className="h-16 sm:h-20 mx-auto rounded-lg drop-shadow-2xl"
+            />
+          </motion.div>
+
+          {/* Room Badge */}
+          <motion.div
+            animate={{ rotate: [0, -5, 5, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            className="inline-block mb-4"
+          >
+            <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-3 rounded-full shadow-lg border border-white/20">
+              <h1 className="text-xl sm:text-2xl font-extrabold flex items-center gap-2">
+                <Zap size={24} />
+                Room {id} Battle Arena
+              </h1>
             </div>
           </motion.div>
-        )}
-      </motion.div>
+
+          {/* Players Remaining */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", delay: 0.3 }}
+            className="inline-flex items-center gap-2 bg-white/5 backdrop-blur-sm px-6 py-3 rounded-full border border-white/10"
+          >
+            <Users className="text-green-400" size={20} />
+            <span className="font-bold text-lg">
+              Players remaining: <span className="text-green-400">{players}</span>
+            </span>
+          </motion.div>
+        </motion.div>
+
+        {/* Game Card */}
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
+          className="w-full max-w-4xl"
+        >
+          <div className="bg-gradient-to-b from-slate-900/90 to-slate-800/90 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
+            {!eliminated && !finished && (
+              <>
+                {/* Question Header */}
+                <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 sm:p-8 border-b border-white/10">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={qIndex}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4">
+                        {current.q}
+                      </h2>
+                      <div className="flex items-center justify-center gap-2 text-white/90 font-bold">
+                        <Trophy size={20} />
+                        <span>$15 ⇒ $1,200</span>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Timer and Answers Section */}
+                <div className="p-6 sm:p-8">
+                  {/* Timer */}
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-6"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2 text-gray-300 font-semibold">
+                        <Clock size={20} className="text-green-400" />
+                        Time Remaining
+                      </div>
+                      <motion.div
+                        animate={{ scale: timeLeft <= 3 ? [1, 1.1, 1] : 1 }}
+                        transition={{ duration: 0.5, repeat: timeLeft <= 3 ? Infinity : 0 }}
+                        className={`font-mono font-bold text-2xl ${timeLeft <= 3 ? 'text-red-400' : 'text-green-400'}`}
+                      >
+                        {Math.max(0, timeLeft)}s
+                      </motion.div>
+                    </div>
+
+                    <div className="relative w-full bg-white/5 rounded-full h-4 overflow-hidden border border-white/10 shadow-inner">
+                      <motion.div
+                        className={`h-full rounded-full shadow-lg ${
+                          timeLeft <= 3
+                            ? 'bg-gradient-to-r from-red-500 to-orange-500'
+                            : 'bg-gradient-to-r from-green-500 to-emerald-500'
+                        }`}
+                        initial={{ width: "100%" }}
+                        animate={{ width: `${fillPercent}%` }}
+                        transition={{ duration: 0.3 }}
+                      />
+                      {timeLeft <= 3 && (
+                        <motion.div
+                          className="absolute inset-0 bg-white/20"
+                          animate={{ opacity: [0.3, 0, 0.3] }}
+                          transition={{ duration: 0.5, repeat: Infinity }}
+                        />
+                      )}
+                    </div>
+                  </motion.div>
+
+                  {/* Answer Options */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={qIndex}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                    >
+                      {current.opts.map((opt, i) => {
+                        const isCorrect = i === current.a;
+                        const isSelected = selected === i;
+
+                        let bgClass = "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20";
+                        let textClass = "text-white";
+
+                        if (selected !== null) {
+                          if (isCorrect) {
+                            bgClass = "bg-gradient-to-r from-emerald-500 to-teal-500 border-emerald-400";
+                            textClass = "text-white";
+                          } else if (isSelected && !isCorrect) {
+                            bgClass = "bg-gradient-to-r from-red-500 to-rose-500 border-red-400";
+                            textClass = "text-white";
+                          } else {
+                            bgClass = "bg-white/5 border-white/5";
+                            textClass = "text-gray-500";
+                          }
+                        } else if (isSelected) {
+                          bgClass = "bg-green-500/20 border-green-400 ring-2 ring-green-400/50";
+                        }
+
+                        return (
+                          <motion.button
+                            key={i}
+                            initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 * i }}
+                            whileHover={selected === null ? { scale: 1.02, y: -4 } : {}}
+                            whileTap={selected === null ? { scale: 0.98 } : {}}
+                            onClick={() => handleAnswer(i)}
+                            disabled={selected !== null}
+                            className={`flex items-center gap-4 p-5 rounded-2xl text-left font-bold text-lg transition-all shadow-lg border-2 ${bgClass} ${textClass} disabled:cursor-not-allowed`}
+                          >
+                            <div className="min-w-12 min-h-12 rounded-xl flex items-center justify-center font-black text-xl bg-white/10 backdrop-blur-sm">
+                              {String.fromCharCode(65 + i)}
+                            </div>
+                            <div className="flex-1">{opt}</div>
+                            {selected !== null && isCorrect && (
+                              <motion.div
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ type: "spring" }}
+                              >
+                                <CheckCircle2 size={24} />
+                              </motion.div>
+                            )}
+                            {selected !== null && isSelected && !isCorrect && (
+                              <motion.div
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ type: "spring" }}
+                              >
+                                <XCircle size={24} />
+                              </motion.div>
+                            )}
+                          </motion.button>
+                        );
+                      })}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </>
+            )}
+
+            {/* End Screens */}
+            {(eliminated || finished) && (
+              <div className="p-8 sm:p-12">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", duration: 0.8 }}
+                  className="text-center"
+                >
+                  {finished ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: [0, -10, 10, -10, 0], scale: [1, 1.1, 1] }}
+                        transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 2 }}
+                      >
+                        <img
+                          src="https://i.supaimg.com/34cac011-0641-4f3c-af1b-58912ee3f561.png"
+                          alt="Winner"
+                          className="w-64 sm:w-80 max-w-full drop-shadow-2xl mx-auto"
+                        />
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="mt-6"
+                      >
+                        <div className="flex items-center justify-center gap-2 mb-4">
+                          <Sparkles className="text-yellow-400" size={32} />
+                          <h3 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-yellow-400 via-orange-400 to-emerald-400 bg-clip-text text-transparent">
+                            You Won!
+                          </h3>
+                          <Sparkles className="text-yellow-400" size={32} />
+                        </div>
+                        <p className="text-2xl font-bold text-white mb-2">Prize: $1,200</p>
+                      </motion.div>
+                    </>
+                  ) : (
+                    <>
+                      <motion.div
+                        animate={{ rotate: [0, -5, 5, -5, 0] }}
+                        transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 1 }}
+                      >
+                        <XCircle size={100} className="mx-auto mb-6 text-red-500" />
+                      </motion.div>
+
+                      <h3 className="text-2xl sm:text-3xl font-extrabold text-red-500 mb-4">
+                        Game Over!
+                      </h3>
+                      <p className="text-gray-400 text-lg">You were eliminated. Try again!</p>
+                    </>
+                  )}
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-8 flex gap-4 justify-center flex-wrap"
+                  >
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleGoHome}
+                      className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm font-semibold border border-white/20 transition cursor-pointer"
+                    >
+                      <Home size={20} />
+                      Home
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleTryAgain}
+                      className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 cursor-pointer"
+                    >
+                      <RotateCcw size={20} />
+                      {finished ? 'Play Again' : 'Try Again'}
+                    </motion.button>
+                  </motion.div>
+                </motion.div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </main>
     </div>
   );
 };
