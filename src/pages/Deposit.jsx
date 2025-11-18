@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 
 // ==========================
-// Reusable Sidebar Component
+// Enhanced Reusable Sidebar Component
 // ==========================
 const Sidebar = ({
   open = false,
@@ -46,7 +46,7 @@ const Sidebar = ({
   ],
   showOverlay = true,
   position = "left",
-  width = "w-4/5 max-w-sm",
+  width = "w-4/5 sm:w-80 md:w-96",
   theme = {
     background: "bg-gradient-to-br from-slate-900 to-slate-950",
     text: "text-white",
@@ -120,7 +120,7 @@ const Sidebar = ({
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
+      {/* Enhanced Sidebar */}
       <AnimatePresence>
         {open && (
           <motion.aside
@@ -130,42 +130,42 @@ const Sidebar = ({
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className={`fixed ${getPositionClasses()} h-screen ${width} ${theme.background} ${theme.text} backdrop-blur-xl z-40 flex flex-col shadow-2xl ${theme.border} overflow-hidden`}
           >
-            {/* Main Content Container - No scrolling needed */}
+            {/* Main Content Container */}
             <div className="flex flex-col h-full">
               {/* Header - Fixed height */}
-              <div className="flex-shrink-0 flex items-center justify-between p-6 border-b border-white/10">
-                <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              <div className="flex-shrink-0 flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
+                <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
                   Menu
                 </h3>
                 <motion.button
                   whileHover={{ rotate: 90, scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={onClose}
-                  className="text-3xl text-white leading-none w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                  className="text-2xl sm:text-3xl text-white leading-none w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
                 >
                   ×
                 </motion.button>
               </div>
 
-              {/* Scrollable Content Area - Fits perfectly */}
-              <div className="flex-1 flex flex-col justify-between py-4 overflow-hidden">
-                {/* Top Section - User Info & Menu Links */}
-                <div className="flex-1 overflow-hidden">
+              {/* Scrollable Content Area with Custom Scrollbar */}
+              <div className="flex-1 flex flex-col overflow-hidden">
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar py-4">
                   {/* User Profile Section */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="flex items-center gap-4 p-4 mx-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl border border-white/10 mb-4"
+                    className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 mx-3 sm:mx-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl border border-white/10 mb-4"
                   >
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl font-bold shadow-lg shadow-blue-500/30">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-lg sm:text-xl font-bold shadow-lg shadow-blue-500/30 flex-shrink-0">
                       {user.username[0].toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <motion.strong
                         whileHover={{ scale: 1.05 }}
                         onClick={handleUsernameEdit}
-                        className="cursor-pointer hover:text-blue-400 text-lg block transition-colors truncate"
+                        className="cursor-pointer hover:text-blue-400 text-base sm:text-lg block transition-colors truncate"
                         title={user.username}
                       >
                         {user.username}
@@ -179,8 +179,8 @@ const Sidebar = ({
                     </div>
                   </motion.div>
 
-                  {/* Menu Links - Compact spacing */}
-                  <div className="px-3 space-y-1">
+                  {/* Menu Links */}
+                  <div className="px-2 sm:px-3 space-y-1">
                     {menuLinks.map((item, i) => (
                       <motion.div
                         key={i}
@@ -192,7 +192,7 @@ const Sidebar = ({
                         onClick={() => handleNavigation(item.path)}
                         className="p-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 rounded-xl transition-all group"
                       >
-                        <span className="text-xl group-hover:scale-110 transition-transform min-w-6 text-center">
+                        <span className="text-xl group-hover:scale-110 transition-transform min-w-6 text-center flex-shrink-0">
                           {item.icon}
                         </span>
                         <span className="font-medium group-hover:text-blue-400 transition-colors text-sm truncate">
@@ -203,8 +203,8 @@ const Sidebar = ({
                   </div>
                 </div>
 
-                {/* Support Section - Simplified */}
-                <div className="flex-shrink-0 px-3 mt-2">
+                {/* Support Section - Fixed at bottom */}
+                <div className="flex-shrink-0 p-3 sm:p-4 border-t border-white/10 bg-slate-900/50">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -223,8 +223,9 @@ const Sidebar = ({
                     
                     <motion.button
                       whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handleNavigation("/support")}
-                      className="w-full p-2 bg-white/10 rounded-lg cursor-pointer text-center"
+                      className="w-full p-2 bg-white/10 rounded-lg cursor-pointer text-center hover:bg-white/20 transition-colors"
                     >
                       <span className="text-white text-xs font-medium">Get Help Now</span>
                     </motion.button>
@@ -232,6 +233,40 @@ const Sidebar = ({
                 </div>
               </div>
             </div>
+
+            {/* Custom Scrollbar Styles */}
+            <style jsx>{`
+              .custom-scrollbar {
+                scrollbar-width: thin;
+                scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+              }
+              
+              .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+              }
+              
+              .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+                border-radius: 3px;
+              }
+              
+              .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: linear-gradient(to bottom, rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5));
+                border-radius: 3px;
+              }
+              
+              .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(147, 51, 234, 0.7));
+              }
+              
+              /* For Firefox */
+              @supports (scrollbar-color: auto) {
+                .custom-scrollbar {
+                  scrollbar-width: thin;
+                  scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+                }
+              }
+            `}</style>
           </motion.aside>
         )}
       </AnimatePresence>
@@ -428,7 +463,7 @@ const Deposit = () => {
         ))}
       </AnimatePresence>
 
-      {/* Reusable Sidebar Component */}
+      {/* Enhanced Sidebar Component */}
       <Sidebar
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -436,7 +471,7 @@ const Deposit = () => {
         onUsernameEdit={handleUsernameEdit}
         menuLinks={menuLinks}
         position="left"
-        width="w-4/5 max-w-sm"
+        width="w-4/5 sm:w-80 md:w-96"
         theme={{
           background: "bg-gradient-to-br from-slate-900 to-slate-950",
           text: "text-white",
