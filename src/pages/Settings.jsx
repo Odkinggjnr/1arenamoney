@@ -119,13 +119,13 @@ const Sidebar = ({ open, onClose, user, onUsernameEdit }) => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
-    { icon: <CreditCard className="w-5 h-5" />, label: "Deposit", path: "/deposit" },
-    { icon: <DollarSign className="w-5 h-5" />, label: "Withdraw", path: "/withdraw" },
-    { icon: <Trophy className="w-5 h-5" />, label: "Leaderboard", path: "/leadership" },
-    { icon: <SettingsIcon className="w-5 h-5" />, label: "Settings", path: "/settings" },
-    { icon: <MessageCircle className="w-5 h-5" />, label: "Tournament Chat", path: "/tournament-chat" },
-    { icon: <MessageCircle className="w-5 h-5" />, label: "Support", path: "/support" },
+    { icon: "🏠", label: "Home", path: "/" },
+    { icon: "💰", label: "Deposit", path: "/deposit" },
+    { icon: "💸", label: "Withdraw", path: "/withdraw" },
+    { icon:  "🏆", label: "Leaderboard", path: "/leadership" },
+    { icon: "⚙️", label: "Settings", path: "/settings" },
+    { icon: "💬", label: "Tournament Chat", path: "/tournament-chat" },
+    { icon: "🆘" , label: "Support", path: "/support" },
   ];
 
   const handleNavigation = (path) => {
