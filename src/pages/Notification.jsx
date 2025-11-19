@@ -354,13 +354,13 @@ const Notification = () => {
           onClick={() => navigateWithLoading("/")}
           src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
           alt="Logo"
-          className="h-10 sm:h-12 mx-auto cursor-pointer"
+          className="h-10 sm:h-12 mx-auto cursor-pointer mr-5 md:ml-0"
         />
 
         <div className="flex items-center gap-3">
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="bg-gradient-to-r from-emerald-500/20 to-green-500/20 backdrop-blur-xl px-3 py-2 rounded-xl font-bold text-sm border border-emerald-500/30 shadow-lg shadow-emerald-500/20"
+            className="bg-gradient-to-r from-emerald-500/20 to-green-500/20 backdrop-blur-xl px-1 py-2 rounded-xl font-bold text-sm border border-emerald-500/30 shadow-lg shadow-emerald-500/20"
           >
             ${user.balance.toFixed(2)}
           </motion.div>
@@ -369,7 +369,7 @@ const Notification = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigateWithLoading("/deposit")}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-sm shadow-lg shadow-green-500/30 transition-all cursor-pointer"
+            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-1 py-2 rounded-xl text-sm shadow-lg shadow-green-500/30 transition-all cursor-pointer"
           >
             Deposit
           </motion.button>
