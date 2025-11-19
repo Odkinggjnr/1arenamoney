@@ -189,35 +189,6 @@ const Sidebar = ({
                     ))}
                   </div>
                 </div>
-
-                {/* Support Section - Fixed at bottom */}
-                <div className="flex-shrink-0 p-3 sm:p-4 border-t border-white/10 bg-slate-900/50">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 p-3 rounded-2xl border border-white/20 shadow-lg"
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-lg">🆘</span>
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="font-bold text-white text-sm">24/7 Support</h4>
-                        <p className="text-white/80 text-xs">Always here to help you</p>
-                      </div>
-                    </div>
-                    
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => handleNavigation("/support")}
-                      className="w-full p-2 bg-white/10 rounded-lg cursor-pointer text-center hover:bg-white/20 transition-colors"
-                    >
-                      <span className="text-white text-xs font-medium">Get Help Now</span>
-                    </motion.button>
-                  </motion.div>
-                </div>
               </div>
             </div>
 

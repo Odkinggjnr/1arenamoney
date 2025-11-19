@@ -62,14 +62,20 @@ const Alert = ({ type = "info", title, message, onClose }) => {
 };
 
 const Lobby = () => {
-
-  // FIXED — this is the correct version
   const { roomId } = useParams();
-
   const navigate = useNavigate();
   const [alert, setAlert] = useState(null);
 
-  // FIXED — now roomId works
+  // Get user balance from localStorage or use default
+  const [userBalance, setUserBalance] = useState(() => {
+    const savedUser = localStorage.getItem("moneyRoomsUser");
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      return userData.balance || 0;
+    }
+    return 100; // Default balance for demo
+  });
+
   const data = roomData[String(roomId)];
 
   const showAlert = (type, title, message) => {
@@ -77,7 +83,23 @@ const Lobby = () => {
     setTimeout(() => setAlert(null), 4000);
   };
 
+  // Function to check if user can access the room
+  const canAccessRoom = () => {
+    const roomPrice = parseInt(data.entryFee.replace('$', ''));
+    return userBalance >= roomPrice;
+  };
+
   const handleStartGame = () => {
+    if (!canAccessRoom()) {
+      const roomPrice = parseInt(data.entryFee.replace('$', ''));
+      showAlert(
+        "error", 
+        "Insufficient Balance", 
+        `You need at least $${roomPrice} to enter this room. Your current balance is $${userBalance}. Please deposit more funds.`
+      );
+      return;
+    }
+
     showAlert("success", "Game Starting!", "Preparing your game room...");
     navigate(`/room/${data.gameId}`);
   };
@@ -85,6 +107,11 @@ const Lobby = () => {
   const handleGoBack = () => {
     showAlert("info", "Navigating Back", "Returning to room selection...");
     navigate("/home");
+  };
+
+  const handleDeposit = () => {
+    showAlert("info", "Redirecting", "Taking you to deposit page...");
+    navigate("/deposit");
   };
 
   if (!data) {
@@ -113,6 +140,8 @@ const Lobby = () => {
 
   const prizeIcons = [Trophy, Award, Medal];
   const prizeColors = ["text-yellow-400", "text-gray-300", "text-amber-600"];
+  const roomPrice = parseInt(data.entryFee.replace('$', ''));
+  const hasSufficientBalance = userBalance >= roomPrice;
 
   return (
     <div className="md:min-h-screen flex flex-col items-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 text-white overflow-hidden relative">
@@ -195,9 +224,21 @@ const Lobby = () => {
               <p className="text-gray-400 text-lg mb-2">
                 Entry Fee: <span className="text-white font-semibold">{data.entryFee}</span>
               </p>
-              <p className="text-transparent bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text font-bold text-xl mb-6">
+              <p className="text-transparent bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text font-bold text-xl mb-2">
                 Win up to {data.max}
               </p>
+              
+              {/* Balance Display */}
+              <div className={`flex items-center justify-between p-3 rounded-xl mb-4 ${
+                hasSufficientBalance 
+                  ? "bg-emerald-500/20 border border-emerald-500/30" 
+                  : "bg-red-500/20 border border-red-500/30"
+              }`}>
+                <span className="text-sm font-medium">Your Balance:</span>
+                <span className={`font-bold ${hasSufficientBalance ? "text-emerald-400" : "text-red-400"}`}>
+                  ${userBalance.toFixed(2)}
+                </span>
+              </div>
             </motion.div>
 
             {/* Rewards */}
@@ -233,24 +274,44 @@ const Lobby = () => {
               })}
             </motion.div>
 
-            {/* Buttons */}
-            <motion.button
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              whileHover={{ scale: 1.02, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)" }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleStartGame}
-              className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 hover:from-blue-500 hover:to-purple-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg relative overflow-hidden group"
-            >
-              <motion.div
-                className="absolute inset-0 bg-white/20"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "100%" }}
-                transition={{ duration: 0.5 }}
-              />
-              <span className="relative z-10">Start Game</span>
-            </motion.button>
+            {/* Action Buttons */}
+            {hasSufficientBalance ? (
+              <motion.button
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7 }}
+                whileHover={{ scale: 1.02, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)" }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleStartGame}
+                className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 hover:from-blue-500 hover:to-purple-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg relative overflow-hidden group"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-white/20"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.5 }}
+                />
+                <span className="relative z-10">Start Game</span>
+              </motion.button>
+            ) : (
+              <motion.button
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleDeposit}
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg relative overflow-hidden group"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-white/20"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.5 }}
+                />
+                <span className="relative z-10">Deposit ${roomPrice - userBalance} More</span>
+              </motion.button>
+            )}
 
             <motion.button
               initial={{ y: 20, opacity: 0 }}

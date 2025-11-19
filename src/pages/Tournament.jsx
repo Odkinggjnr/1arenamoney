@@ -304,33 +304,7 @@ const Sidebar = ({
                   </div>
                 </div>
 
-                {/* Support Section - Simplified */}
-                <div className="flex-shrink-0 px-3 mt-2">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 p-3 rounded-2xl border border-white/20 shadow-lg"
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-lg">🆘</span>
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="font-bold text-white text-sm">24/7 Support</h4>
-                        <p className="text-white/80 text-xs">Always here to help you</p>
-                      </div>
-                    </div>
-                    
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      onClick={() => handleNavigation("/support")}
-                      className="w-full p-2 bg-white/10 rounded-lg cursor-pointer text-center"
-                    >
-                      <span className="text-white text-xs font-medium">Get Help Now</span>
-                    </motion.button>
-                  </motion.div>
-                </div>
+                {/* Removed Support Section to prevent bottom nav overlap */}
               </div>
             </div>
           </motion.aside>
@@ -408,6 +382,10 @@ const Tournament = () => {
     navigate('/'); 
   }
 
+  const handleNotifications = () => {
+    navigate('/notifications');
+  }
+
   const menuLinks = [
     { name: "Home", path: "/", icon: "🏠" },
     { name: "Deposit", path: "/deposit", icon: "💰" },
@@ -455,7 +433,7 @@ const Tournament = () => {
               src="https://i.supaimg.com/42dbf38f-2696-4a9f-ae8a-f297b212233b.png"
               alt="Logo"
               onClick={handleBack}
-              className="h-8 sm:h-10 cursor-pointer"
+              className="h-8 sm:h-10 cursor-pointer mr-24 md:mr-0"
             />
           </div>
 
@@ -479,6 +457,7 @@ const Tournament = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/notifications")}
               className="relative w-10 h-10 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl flex items-center justify-center cursor-pointer border border-white/10 shadow-lg"
             >
               <Bell className="w-5 h-5" />
